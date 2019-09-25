@@ -1,4 +1,5 @@
 local composer = require( "composer" )
+local globals = require("globals")
 
 local scene = composer.newScene()
 
@@ -11,10 +12,12 @@ local function goToHome()
 	composer.gotoScene( "home", { time=800, effect="crossFade" } )
 end
 
-local CENTER_X = display.contentCenterX
-local CENTER_Y = display.contentCenterY
-local TOP_X = display.contentWidth+120
-local TOP_Y = 0
+local screenWidth = globals.screenWidth
+local screenHeight = globals.screenHeight
+
+local topX = 1200
+local topY = 0
+local floorHeight = 500
 
 local gameGroup
 local uiGroup
@@ -38,15 +41,24 @@ function scene:create( event )
 	sceneGroup:insert(uiGroup)
 
   -- background
-	local background = display.newRect( backgroundGroup, CENTER_X, CENTER_Y, 1400, 800)
-	background.x = CENTER_X
-	background.y = CENTER_Y
+	local background = display.newRect( backgroundGroup, globals.centerX, globals.centerY, screenWidth, screenHeight )
   background:setFillColor( 0.6 )
 
-  local closeButton = display.newText( sceneGroup, "X", TOP_X, TOP_Y+50, native.systemFont, 60)
-  closeButton:addEventListener( "tap", goToHome )
+  local floorMovementY = (screenHeight - floorHeight) / 2
 
-  character = display.newImage( gameGroup, "images/character.png", -50, CENTER_Y )
+  -- arena floor
+  local floor = display.newRect( gameGroup, globals.centerX, globals.centerY+floorMovementY, screenWidth, floorHeight )
+  floor:setFillColor( 0.8 )
+  floor:setStrokeColor( 1, 0, 0 )
+  floor.strokeWidth = 5
+
+  character = display.newImage( gameGroup, "images/character.png", -50, globals.centerY )
+
+  -- TODO: should probably put the close button on a different group to the base group?
+  local closeButton = display.newText( sceneGroup, "X", topX-20, topY, native.systemFont, 60)
+  closeButton.anchorX = 1
+  closeButton.anchorY = 0
+  closeButton:addEventListener( "tap", goToHome )
 end
 
 
