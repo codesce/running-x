@@ -1,6 +1,6 @@
 return {
-  screenWidth = display.actualContentWidth,
-  screenHeight = display.actualContentHeight,
+  screenWidth = display.contentWidth,
+  screenHeight = display.contentHeight,
   centerX = display.contentCenterX,
   centerY = display.contentCenterY
 }

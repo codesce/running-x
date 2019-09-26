@@ -26,10 +26,11 @@ function scene:create( event )
   local background = display.newRect( sceneGroup, globals.centerX, globals.centerY, globals.screenWidth, globals.screenHeight )
   background:setFillColor( 0, 0.68, 0.8 )
 
-  local title = display.newEmbossedText(sceneGroup, "RunningX", globals.centerX, globals.centerY-150, native.systemFont, 150 )
+  local title = display.newEmbossedText(sceneGroup, "RunningX", globals.centerX, globals.centerY/2, native.systemFont, 100 )
   title:setFillColor( 1 )
 
-  local playButton = display.newText( sceneGroup, "Start", globals.centerX, globals.centerY+200, native.systemFont, 60)
+	local playButtonY = globals.screenHeight - (globals.screenHeight / 3)
+  local playButton = display.newText( sceneGroup, "Start", globals.centerX, playButtonY, native.systemFont, 42)
   playButton:addEventListener( "tap", gotoGame )
 
 end

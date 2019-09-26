@@ -14,15 +14,19 @@ end
 
 local screenWidth = globals.screenWidth
 local screenHeight = globals.screenHeight
+local floorHeight = 420
 
-local topX = 1200
-local topY = 0
-local floorHeight = 500
-
+local floorGroup
 local gameGroup
 local uiGroup
 
 local character
+
+
+-- local anchorPoint = display.newRect(screenWidth, screenHeight, 5, 5)
+-- anchorPoint:setFillColor( 0, 0, 1 )
+-- display:insert(floorGroup)
+
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -33,10 +37,12 @@ function scene:create( event )
   local sceneGroup = self.view
 
   local backgroundGroup = display.newGroup()
+	floorGroup = display.newGroup()
 	gameGroup = display.newGroup()
 	uiGroup = display.newGroup()
 
   sceneGroup:insert(backgroundGroup)
+	sceneGroup:insert(floorGroup)
 	sceneGroup:insert(gameGroup)
 	sceneGroup:insert(uiGroup)
 
@@ -44,20 +50,18 @@ function scene:create( event )
 	local background = display.newRect( backgroundGroup, globals.centerX, globals.centerY, screenWidth, screenHeight )
   background:setFillColor( 0.6 )
 
-  local floorMovementY = (screenHeight - floorHeight) / 2
-
-  -- arena floor
-  local floor = display.newRect( gameGroup, globals.centerX, globals.centerY+floorMovementY, screenWidth, floorHeight )
+  -- floor
+	local floor = display.newRect( floorGroup, screenWidth, screenHeight, screenWidth, floorHeight )
   floor:setFillColor( 0.8 )
-  floor:setStrokeColor( 1, 0, 0 )
-  floor.strokeWidth = 5
+	floor.anchorX = 1
+	floor.anchorY = 1
 
-  character = display.newImage( gameGroup, "images/character.png", -50, globals.centerY )
+  -- game images
+  character = display.newImage( gameGroup, "images/character.png", 100, globals.centerY )
 
   -- TODO: should probably put the close button on a different group to the base group?
-  local closeButton = display.newText( sceneGroup, "X", topX-20, topY, native.systemFont, 60)
-  closeButton.anchorX = 1
-  closeButton.anchorY = 0
+  local closeButton = display.newText( uiGroup, "X", screenWidth-30, 30, native.systemFont, 42)
+	closeButton:setFillColor( 1 )
   closeButton:addEventListener( "tap", goToHome )
 end
 
