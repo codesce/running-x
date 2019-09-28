@@ -51,13 +51,22 @@ function scene:create( event )
   background:setFillColor( 0.6 )
 
   -- floor
-	local floor = display.newRect( floorGroup, screenWidth, screenHeight, screenWidth, floorHeight )
-  floor:setFillColor( 0.8 )
-	floor.anchorX = 1
-	floor.anchorY = 1
+	floorGroup.x = 0
+	floorGroup.y = (screenHeight - floorHeight)
 
-  -- game images
-  character = display.newImage( gameGroup, "images/character.png", 100, globals.centerY )
+	local floor = display.newRect( floorGroup, 0, 0, screenWidth, floorHeight )
+  floor:setFillColor( 0.8 )
+	floor.anchorX = 0
+	floor.anchorY = 0
+
+  -- game images (set group 0,0 to be same as the floor)
+	gameGroup.x = floorGroup.x
+	gameGroup.y = floorGroup.y
+
+  -- render character centrally (by feet!) to the floor
+  character = display.newImage( gameGroup, "images/character.png", 0, floorHeight/2 )
+	character.anchorX = 0
+	character.anchorY = 1
 
   -- TODO: should probably put the close button on a different group to the base group?
   local closeButton = display.newText( uiGroup, "X", screenWidth-30, 30, native.systemFont, 42)
