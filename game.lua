@@ -21,12 +21,34 @@ local gameGroup
 local uiGroup
 
 local character
+local currentCharacterPosition = 0
+local characterBottomOffset = 8  -- caused by bottom of image having 8 pixels of space
 
+local function moveCharacter(event)
+  local phase = event.phase
+
+  if ("began" == phase) then
+		currentCharacterPosition = event.y
+    display.currentStage:setFocus(backgroundGroup)
+  elseif ("moved" == phase) then
+		local newPosition = character.y + ((event.y - currentCharacterPosition) * 1.3)
+
+		if (newPosition > characterBottomOffset and (newPosition < floorHeight+characterBottomOffset)) then
+    	character.y = newPosition
+		end
+
+		currentCharacterPosition = event.y
+  elseif ("ended" == phase or "cancelled" == phase) then
+		currentCharacterPosition = character.y
+    display.currentStage:setFocus(nil)
+  end
+
+  return true -- prevents touch propagation to underlying objects
+end
 
 -- local anchorPoint = display.newRect(screenWidth, screenHeight, 5, 5)
 -- anchorPoint:setFillColor( 0, 0, 1 )
 -- display:insert(floorGroup)
-
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -50,6 +72,8 @@ function scene:create( event )
 	local background = display.newRect( backgroundGroup, globals.centerX, globals.centerY, screenWidth, screenHeight )
   background:setFillColor( 0.6 )
 
+	backgroundGroup:addEventListener('touch', moveCharacter)
+
   -- floor
 	floorGroup.x = 0
 	floorGroup.y = (screenHeight - floorHeight)
@@ -68,7 +92,7 @@ function scene:create( event )
 	character.anchorX = 0
 	character.anchorY = 1
 
-  -- TODO: should probably put the close button on a different group to the base group?
+  -- ui elements
   local closeButton = display.newText( uiGroup, "X", screenWidth-30, 30, native.systemFont, 42)
 	closeButton:setFillColor( 1 )
   closeButton:addEventListener( "tap", goToHome )
