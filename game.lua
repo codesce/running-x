@@ -46,6 +46,42 @@ local function moveCharacter(event)
   return true -- prevents touch propagation to underlying objects
 end
 
+local function drawGrid(group)
+	local lineColor = 0.9
+	local lineStrokeWidth = 4
+
+	local function drawLine(x1, y1, x2, y2)
+		local line = display.newLine(group, x1, y1, x2, y2)
+		line:setStrokeColor(lineColor)
+		line.strokeWidth = lineStrokeWidth
+	end
+
+	local function drawVerticalLines()
+		local lineX = 0
+		local lineXOffset = 150
+		local gap = 120
+
+		while lineX < screenWidth do
+			drawLine(lineX, 0, lineX + lineXOffset, floorHeight)
+			lineX = lineX + gap
+		end
+	end
+
+	local function drawHorizontalLines ()
+		local yLineCount = 5
+		local gap = floorHeight / yLineCount
+		local lineY = 0 + gap
+
+		for i=1, yLineCount-1 do
+			drawLine(0, lineY, screenWidth, lineY)
+			lineY = lineY + gap
+		end
+	end
+
+	drawVerticalLines()
+	drawHorizontalLines()
+end
+
 -- local anchorPoint = display.newRect(screenWidth, screenHeight, 5, 5)
 -- anchorPoint:setFillColor( 0, 0, 1 )
 -- display:insert(floorGroup)
@@ -82,6 +118,9 @@ function scene:create( event )
   floor:setFillColor( 0.8 )
 	floor.anchorX = 0
 	floor.anchorY = 0
+
+	-- floor lines
+	drawGrid(floorGroup)
 
   -- game images (set group 0,0 to be same as the floor)
 	gameGroup.x = floorGroup.x
