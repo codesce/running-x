@@ -46,6 +46,15 @@ local function moveCharacter(event)
   return true -- prevents touch propagation to underlying objects
 end
 
+-- variables for the vertical lines
+local lineX = 0
+local lineXOffset = 150
+local xGap = 120
+
+-- variables for the horizontal lines
+local yLineCount = 5
+local yGap = floorHeight / yLineCount
+
 local function drawGrid(group)
 	local lineColor = 0.9
 	local lineStrokeWidth = 4
@@ -57,29 +66,38 @@ local function drawGrid(group)
 	end
 
 	local function drawVerticalLines()
-		local lineX = 0
-		local lineXOffset = 150
-		local gap = 120
-
 		while lineX < screenWidth do
 			drawLine(lineX, 0, lineX + lineXOffset, floorHeight)
-			lineX = lineX + gap
+			lineX = lineX + xGap
 		end
 	end
 
 	local function drawHorizontalLines ()
-		local yLineCount = 5
-		local gap = floorHeight / yLineCount
-		local lineY = 0 + gap
+		local lineY = 0 + yGap
 
 		for i=1, yLineCount-1 do
 			drawLine(0, lineY, screenWidth, lineY)
-			lineY = lineY + gap
+			lineY = lineY + yGap
 		end
 	end
 
 	drawVerticalLines()
 	drawHorizontalLines()
+end
+
+local function drawObject()
+	-- starting point of the object
+	local xGridPosition = 5 -- 5th grid box along
+	local yGridPosition = 2 -- 2nd grid box down (middle)
+	local x = (xGap * xGridPosition) + ((lineXOffset / 5) * yGridPosition)
+	local y = yGap * yGridPosition
+
+	local object = display.newRect(gameGroup, x, y, xGap, yGap)
+	object.anchorX = 0
+	object.anchorY = 0
+	object:setFillColor( 0, 1, 0 )
+	object.path.x2 = (lineXOffset / 5)
+	object.path.x3 = (lineXOffset / 5)
 end
 
 -- local anchorPoint = display.newRect(screenWidth, screenHeight, 5, 5)
@@ -145,6 +163,7 @@ function scene:show( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
+		drawObject()
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
