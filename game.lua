@@ -1,5 +1,6 @@
 local composer = require( "composer" )
-local globals = require("globals")
+local globals = require( "globals" )
+local physics = require( "physics" )
 
 local scene = composer.newScene()
 
@@ -17,7 +18,8 @@ local screenHeight = globals.screenHeight
 local floorHeight = 420
 
 local floorGroup
-local gameGroup
+local floorObjectsGroup
+local gameObjectsGroup
 local uiGroup
 
 local character
@@ -85,19 +87,23 @@ local function drawGrid(group)
 	drawHorizontalLines()
 end
 
-local function drawObject()
+local function drawObject(group)
 	-- starting point of the object
 	local xGridPosition = 5 -- 5th grid box along
 	local yGridPosition = 2 -- 2nd grid box down (middle)
 	local x = (xGap * xGridPosition) + ((lineXOffset / 5) * yGridPosition)
 	local y = yGap * yGridPosition
 
-	local object = display.newRect(gameGroup, x, y, xGap, yGap)
+	local object = display.newRect(group, x, y, xGap, yGap)
 	object.anchorX = 0
 	object.anchorY = 0
 	object:setFillColor( 0, 1, 0 )
 	object.path.x2 = (lineXOffset / 5)
 	object.path.x3 = (lineXOffset / 5)
+end
+
+local function moveFloor(event)
+	floorObjectsGroup:setLinearVelocity(-300, 0)
 end
 
 -- local anchorPoint = display.newRect(screenWidth, screenHeight, 5, 5)
@@ -114,12 +120,14 @@ function scene:create( event )
 
   local backgroundGroup = display.newGroup()
 	floorGroup = display.newGroup()
-	gameGroup = display.newGroup()
+	floorObjectsGroup = display.newGroup()
+	gameObjectsGroup = display.newGroup()
 	uiGroup = display.newGroup()
 
   sceneGroup:insert(backgroundGroup)
 	sceneGroup:insert(floorGroup)
-	sceneGroup:insert(gameGroup)
+	sceneGroup:insert(floorObjectsGroup)
+	sceneGroup:insert(gameObjectsGroup)
 	sceneGroup:insert(uiGroup)
 
   -- background
@@ -141,11 +149,13 @@ function scene:create( event )
 	drawGrid(floorGroup)
 
   -- game images (set group 0,0 to be same as the floor)
-	gameGroup.x = floorGroup.x
-	gameGroup.y = floorGroup.y
+	floorObjectsGroup.x = floorGroup.x
+	floorObjectsGroup.y = floorGroup.y
+	gameObjectsGroup.x = floorGroup.x
+	gameObjectsGroup.y = floorGroup.y
 
   -- render character centrally (by feet!) to the floor
-  character = display.newImage( gameGroup, "images/character.png", 0, floorHeight/2 )
+  character = display.newImage( gameObjectsGroup, "images/character.png", 0, floorHeight/2 )
 	character.anchorX = 0
 	character.anchorY = 1
 
@@ -163,11 +173,15 @@ function scene:show( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
-		drawObject()
+		drawObject(floorObjectsGroup)
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
+		physics.start()
+		physics.addBody(floorObjectsGroup, 'dynamic')
+		floorObjectsGroup.gravityScale = 0
 
+		timer.performWithDelay( 1000, moveFloor )
 	end
 end
 
@@ -182,7 +196,8 @@ function scene:hide( event )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
-    composer.removeScene( "game" )
+    physics.pause()
+		composer.removeScene( "game" )
 	end
 end
 
