@@ -1,5 +1,5 @@
 local composer = require( "composer" )
-local globals = require("globals")
+local globals = require( "globals" )
 
 local scene = composer.newScene()
 
@@ -8,7 +8,12 @@ local scene = composer.newScene()
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
 
-local function gotoGame()
+local screenWidth = globals.screenWidth
+local screenHeight = globals.screenHeight
+local centerX = globals.centerX
+local centerY = globals.centerY
+
+local function goToGame()
 	composer.gotoScene( "game", { time=800, effect="crossFade" } )
 end
 
@@ -23,15 +28,15 @@ function scene:create( event )
 	-- Code here runs when the scene is first created but has not yet appeared on screen
 
   -- Add home background
-  local background = display.newRect( sceneGroup, globals.centerX, globals.centerY, globals.screenWidth, globals.screenHeight )
+  local background = display.newRect( sceneGroup, centerX, centerY, screenWidth, screenHeight )
   background:setFillColor( 0, 0.68, 0.8 )
 
-  local title = display.newEmbossedText(sceneGroup, "RunningX", globals.centerX, globals.centerY/2, native.systemFont, 100 )
+  local title = display.newEmbossedText(sceneGroup, "RunningX", centerX, centerY/2, native.systemFont, 100 )
   title:setFillColor( 1 )
 
-	local playButtonY = globals.screenHeight - (globals.screenHeight / 3)
-  local playButton = display.newText( sceneGroup, "Start", globals.centerX, playButtonY, native.systemFont, 42)
-  playButton:addEventListener( "tap", gotoGame )
+	local playButtonY = screenHeight - (screenHeight / 3)
+  local playButton = display.newText( sceneGroup, "Start", centerX, playButtonY, native.systemFont, 42)
+  playButton:addEventListener( "tap", goToGame )
 
 end
 

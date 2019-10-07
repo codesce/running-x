@@ -2,6 +2,11 @@ local composer = require( "composer" )
 local globals = require( "globals" )
 local physics = require( "physics" )
 
+local background = require ( "game.background" )
+local floor = require( "game.floor" )
+local character = require( "game.character" )
+local ui = require( "game.ui" )
+
 local scene = composer.newScene()
 
 -- -----------------------------------------------------------------------------------
@@ -9,101 +14,32 @@ local scene = composer.newScene()
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
 
-local function goToHome()
-	composer.gotoScene( "home", { time=800, effect="crossFade" } )
-end
-
 local screenWidth = globals.screenWidth
 local screenHeight = globals.screenHeight
-local floorHeight = 420
+local floorHeight = globals.floorHeight
 
+local backgroundGroup
 local floorGroup
 local floorObjectsGroup
 local gameObjectsGroup
 local uiGroup
 
-local character
-local currentCharacterPosition = 0
-local characterBottomOffset = 8  -- caused by bottom of image having 8 pixels of space
-
-local function moveCharacter(event)
-  local phase = event.phase
-
-  if ("began" == phase) then
-		currentCharacterPosition = event.y
-    display.currentStage:setFocus(backgroundGroup)
-  elseif ("moved" == phase) then
-		local newPosition = character.y + ((event.y - currentCharacterPosition) * 1.3)
-
-		if (newPosition > characterBottomOffset and (newPosition < floorHeight+characterBottomOffset)) then
-    	character.y = newPosition
-		end
-
-		currentCharacterPosition = event.y
-  elseif ("ended" == phase or "cancelled" == phase) then
-		currentCharacterPosition = character.y
-    display.currentStage:setFocus(nil)
-  end
-
-  return true -- prevents touch propagation to underlying objects
+local function goToHome()
+  composer.gotoScene( "home", { time=800, effect="crossFade" } )
 end
 
--- variables for the vertical lines
-local lineX = 0
-local lineXOffset = 150
-local xGap = 120
-
--- variables for the horizontal lines
-local yLineCount = 5
-local yGap = floorHeight / yLineCount
-
-local function drawGrid(group)
-	local lineColor = 0.9
-	local lineStrokeWidth = 4
-
-	local function drawLine(x1, y1, x2, y2)
-		local line = display.newLine(group, x1, y1, x2, y2)
-		line:setStrokeColor(lineColor)
-		line.strokeWidth = lineStrokeWidth
-	end
-
-	local function drawVerticalLines()
-		while lineX < screenWidth do
-			drawLine(lineX, 0, lineX + lineXOffset, floorHeight)
-			lineX = lineX + xGap
-		end
-	end
-
-	local function drawHorizontalLines ()
-		local lineY = 0 + yGap
-
-		for i=1, yLineCount-1 do
-			drawLine(0, lineY, screenWidth, lineY)
-			lineY = lineY + yGap
-		end
-	end
-
-	drawVerticalLines()
-	drawHorizontalLines()
-end
-
-local function drawObject(group)
-	-- starting point of the object
-	local xGridPosition = 5 -- 5th grid box along
-	local yGridPosition = 2 -- 2nd grid box down (middle)
-	local x = (xGap * xGridPosition) + ((lineXOffset / 5) * yGridPosition)
-	local y = yGap * yGridPosition
-
-	local object = display.newRect(group, x, y, xGap, yGap)
-	object.anchorX = 0
-	object.anchorY = 0
-	object:setFillColor( 0, 1, 0 )
-	object.path.x2 = (lineXOffset / 5)
-	object.path.x3 = (lineXOffset / 5)
+local function registerEventListeners()
+	backgroundGroup:addEventListener('touch', character.move)
+	ui.getCloseButton():addEventListener('tap', goToHome)
 end
 
 local function moveFloor(event)
 	floorObjectsGroup:setLinearVelocity(-300, 0)
+end
+
+local function copyCoordinates (object1, object2)
+	object2.x = object1.x
+	object2.y = object1.y
 end
 
 -- local anchorPoint = display.newRect(screenWidth, screenHeight, 5, 5)
@@ -118,7 +54,7 @@ function scene:create( event )
   -- Code here runs when the scene is first created but has not yet appeared on screen
   local sceneGroup = self.view
 
-  local backgroundGroup = display.newGroup()
+	backgroundGroup = display.newGroup()
 	floorGroup = display.newGroup()
 	floorObjectsGroup = display.newGroup()
 	gameObjectsGroup = display.newGroup()
@@ -130,70 +66,47 @@ function scene:create( event )
 	sceneGroup:insert(gameObjectsGroup)
 	sceneGroup:insert(uiGroup)
 
-  -- background
-	local background = display.newRect( backgroundGroup, globals.centerX, globals.centerY, screenWidth, screenHeight )
-  background:setFillColor( 0.6 )
-
-	backgroundGroup:addEventListener('touch', moveCharacter)
-
-  -- floor
+  -- set these groups to all have the same (x,y) start point
 	floorGroup.x = 0
 	floorGroup.y = (screenHeight - floorHeight)
 
-	local floor = display.newRect( floorGroup, 0, 0, screenWidth, floorHeight )
-  floor:setFillColor( 0.8 )
-	floor.anchorX = 0
-	floor.anchorY = 0
+  copyCoordinates(floorGroup, floorObjectsGroup)
+	copyCoordinates(floorGroup, gameObjectsGroup)
 
-	-- floor lines
-	drawGrid(floorGroup)
+	background.init( backgroundGroup )
+	floor.init( floorGroup )
+	character.init( gameObjectsGroup, 0, floorHeight/2 )
+	ui.init( uiGroup )
 
-  -- game images (set group 0,0 to be same as the floor)
-	floorObjectsGroup.x = floorGroup.x
-	floorObjectsGroup.y = floorGroup.y
-	gameObjectsGroup.x = floorGroup.x
-	gameObjectsGroup.y = floorGroup.y
-
-  -- render character centrally (by feet!) to the floor
-  character = display.newImage( gameObjectsGroup, "images/character.png", 0, floorHeight/2 )
-	character.anchorX = 0
-	character.anchorY = 1
-
-  -- ui elements
-  local closeButton = display.newText( uiGroup, "X", screenWidth-30, 30, native.systemFont, 42)
-	closeButton:setFillColor( 1 )
-  closeButton:addEventListener( "tap", goToHome )
+	registerEventListeners()
 end
 
 
 function scene:show( event )
-
 	local sceneGroup = self.view
 	local phase = event.phase
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
-		drawObject(floorObjectsGroup)
+		floor.draw(floorObjectsGroup, 5, 2)
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
 		physics.start()
 		physics.addBody(floorObjectsGroup, 'dynamic')
-		floorObjectsGroup.gravityScale = 0
 
+		floorObjectsGroup.gravityScale = 0
 		timer.performWithDelay( 1000, moveFloor )
 	end
 end
 
 
 function scene:hide( event )
-
 	local sceneGroup = self.view
 	local phase = event.phase
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is on screen (but is about to go off screen)
-
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
     physics.pause()
@@ -203,12 +116,10 @@ end
 
 
 function scene:destroy( event )
-
 	local sceneGroup = self.view
-	-- Code here runs prior to the removal of scene's view
 
-  character:removeSelf()
-  character = nil
+	-- Code here runs prior to the removal of scene's view
+  character:destroy()
 end
 
 
