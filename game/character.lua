@@ -14,8 +14,8 @@ local function init(group, x, y)
   character = display.newImage( group, image, x, y )
 
   -- for now, we are initialising the anchor points here, but should it go here??
-	character.anchorX = 0
-	character.anchorY = 1
+  character.anchorX = 0
+  character.anchorY = 1
 end
 
 
@@ -23,19 +23,19 @@ local function move(event)
   local phase = event.phase
 
   if ("began" == phase) then
-		currentCharacterPosition = event.y
+    currentCharacterPosition = event.y
     -- display.currentStage:setFocus(backgroundGroup) -- TODO: determine if required
   elseif ("moved" == phase) then
-		local newPosition = character.y + ((event.y - currentCharacterPosition) * characterMovementRatio)
+    local newPosition = character.y + ((event.y - currentCharacterPosition) * characterMovementRatio)
 
     -- TODO: move the bounds checking to the floor object/module
-		if (newPosition > characterBottomOffset and (newPosition < floorHeight+characterBottomOffset)) then
-    	character.y = newPosition
-		end
+    if (newPosition > characterBottomOffset and (newPosition < floorHeight+characterBottomOffset)) then
+      character.y = newPosition
+    end
 
-		currentCharacterPosition = event.y
+    currentCharacterPosition = event.y
   elseif ("ended" == phase or "cancelled" == phase) then
-		currentCharacterPosition = character.y
+    currentCharacterPosition = character.y
     display.currentStage:setFocus(nil)
   end
 

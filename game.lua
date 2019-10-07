@@ -29,17 +29,17 @@ local function goToHome()
 end
 
 local function registerEventListeners()
-	backgroundGroup:addEventListener('touch', character.move)
-	ui.getCloseButton():addEventListener('tap', goToHome)
+  backgroundGroup:addEventListener('touch', character.move)
+  ui.getCloseButton():addEventListener('tap', goToHome)
 end
 
 local function moveFloor(event)
-	floorObjectsGroup:setLinearVelocity(-300, 0)
+  floorObjectsGroup:setLinearVelocity(-300, 0)
 end
 
 local function copyCoordinates (object1, object2)
-	object2.x = object1.x
-	object2.y = object1.y
+  object2.x = object1.x
+  object2.y = object1.y
 end
 
 -- local anchorPoint = display.newRect(screenWidth, screenHeight, 5, 5)
@@ -54,71 +54,71 @@ function scene:create( event )
   -- Code here runs when the scene is first created but has not yet appeared on screen
   local sceneGroup = self.view
 
-	backgroundGroup = display.newGroup()
-	floorGroup = display.newGroup()
-	floorObjectsGroup = display.newGroup()
-	gameObjectsGroup = display.newGroup()
-	uiGroup = display.newGroup()
+  backgroundGroup = display.newGroup()
+  floorGroup = display.newGroup()
+  floorObjectsGroup = display.newGroup()
+  gameObjectsGroup = display.newGroup()
+  uiGroup = display.newGroup()
 
   sceneGroup:insert(backgroundGroup)
-	sceneGroup:insert(floorGroup)
-	sceneGroup:insert(floorObjectsGroup)
-	sceneGroup:insert(gameObjectsGroup)
-	sceneGroup:insert(uiGroup)
+  sceneGroup:insert(floorGroup)
+  sceneGroup:insert(floorObjectsGroup)
+  sceneGroup:insert(gameObjectsGroup)
+  sceneGroup:insert(uiGroup)
 
   -- set these groups to all have the same (x,y) start point
-	floorGroup.x = 0
-	floorGroup.y = (screenHeight - floorHeight)
+  floorGroup.x = 0
+  floorGroup.y = (screenHeight - floorHeight)
 
   copyCoordinates(floorGroup, floorObjectsGroup)
-	copyCoordinates(floorGroup, gameObjectsGroup)
+  copyCoordinates(floorGroup, gameObjectsGroup)
 
-	background.init( backgroundGroup )
-	floor.init( floorGroup )
-	character.init( gameObjectsGroup, 0, floorHeight/2 )
-	ui.init( uiGroup )
+  background.init( backgroundGroup )
+  floor.init( floorGroup )
+  character.init( gameObjectsGroup, 0, floorHeight/2 )
+  ui.init( uiGroup )
 
-	registerEventListeners()
+  registerEventListeners()
 end
 
 
 function scene:show( event )
-	local sceneGroup = self.view
-	local phase = event.phase
+  local sceneGroup = self.view
+  local phase = event.phase
 
-	if ( phase == "will" ) then
-		-- Code here runs when the scene is still off screen (but is about to come on screen)
-		floor.draw(floorObjectsGroup, 5, 2)
+  if ( phase == "will" ) then
+    -- Code here runs when the scene is still off screen (but is about to come on screen)
+    floor.draw(floorObjectsGroup, 5, 2)
 
-	elseif ( phase == "did" ) then
-		-- Code here runs when the scene is entirely on screen
-		physics.start()
-		physics.addBody(floorObjectsGroup, 'dynamic')
+  elseif ( phase == "did" ) then
+    -- Code here runs when the scene is entirely on screen
+    physics.start()
+    physics.addBody(floorObjectsGroup, 'dynamic')
 
-		floorObjectsGroup.gravityScale = 0
-		timer.performWithDelay( 1000, moveFloor )
-	end
+    floorObjectsGroup.gravityScale = 0
+    timer.performWithDelay( 1000, moveFloor )
+  end
 end
 
 
 function scene:hide( event )
-	local sceneGroup = self.view
-	local phase = event.phase
+  local sceneGroup = self.view
+  local phase = event.phase
 
-	if ( phase == "will" ) then
-		-- Code here runs when the scene is on screen (but is about to go off screen)
-	elseif ( phase == "did" ) then
-		-- Code here runs immediately after the scene goes entirely off screen
+  if ( phase == "will" ) then
+    -- Code here runs when the scene is on screen (but is about to go off screen)
+  elseif ( phase == "did" ) then
+    -- Code here runs immediately after the scene goes entirely off screen
     physics.pause()
-		composer.removeScene( "game" )
-	end
+    composer.removeScene( "game" )
+  end
 end
 
 
 function scene:destroy( event )
-	local sceneGroup = self.view
+  local sceneGroup = self.view
 
-	-- Code here runs prior to the removal of scene's view
+  -- Code here runs prior to the removal of scene's view
   character:destroy()
 end
 

@@ -9,11 +9,11 @@ local displayGrid = globals.displayGrid
 local function init(group)
   local floor = display.newRect( group, 0, 0, screenWidth, floorHeight )
   floor:setFillColor( 0.8 )
-	floor.anchorX = 0
-	floor.anchorY = 0
+  floor.anchorX = 0
+  floor.anchorY = 0
 
   if (displayGrid == true) then
-	   grid.drawGrid(group)
+     grid.drawGrid(group)
    end
 end
 
