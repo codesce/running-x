@@ -4,7 +4,6 @@ local floorHeight = globals.floorHeight
 local screenWidth = globals.screenWidth
 
 -- variables for the vertical lines
-local lineX = 0  -- starting point of first grid line
 local lineXOffset = 150 --how far to the right the line goes in a diagonal direction
 local xGap = 120 -- space between grid lines
 
@@ -14,6 +13,8 @@ local yGap = floorHeight / yLineCount  --gap between these lines
 
 ----- DRAW GRID ----
 local function drawGrid(group)
+  local lineX = 0
+
   local function drawLine(x1, y1, x2, y2)
     local line = display.newLine(group, x1, y1, x2, y2)
     line:setStrokeColor(0.9)
