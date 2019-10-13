@@ -69,16 +69,13 @@ function scene:create( event )
   -- set these groups to all have the same (x,y) start point
   floorGroup.x = 0
   floorGroup.y = (screenHeight - floorHeight)
-
   copyCoordinates(floorGroup, floorObjectsGroup)
   copyCoordinates(floorGroup, gameObjectsGroup)
 
-  background.init( backgroundGroup )
-  floor.init( floorGroup )
-  character.init( gameObjectsGroup, 0, floorHeight/2 )
-  ui.init( uiGroup )
-
-  registerEventListeners()
+  background.init(backgroundGroup)
+  floor.init(floorGroup)
+  character.init(gameObjectsGroup, 0, floorHeight/2)
+  ui.init(uiGroup)
 end
 
 
@@ -88,8 +85,8 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
+    registerEventListeners()
     floor.draw(floorObjectsGroup, 5, 2)
-
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     physics.start()
@@ -120,6 +117,11 @@ function scene:destroy( event )
 
   -- Code here runs prior to the removal of scene's view
   character:destroy()
+
+  character = nil
+  floor = nil
+  background = nil
+  ui = nil
 end
 
 

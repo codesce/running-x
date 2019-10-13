@@ -43,7 +43,7 @@ local function move(event)
 end
 
 local function destroy()
-  character:removeSelf()
+  display.remove(character)
   character = nil
 end
 
