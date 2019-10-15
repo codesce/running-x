@@ -7,6 +7,8 @@ local floor = require( "game.floor" )
 local character = require( "game.character" )
 local ui = require( "game.ui" )
 
+local floorObjectsMatrix = require( "game.level.A00001" )
+
 local scene = composer.newScene()
 
 -- -----------------------------------------------------------------------------------
@@ -41,10 +43,6 @@ local function copyCoordinates (object1, object2)
   object2.x = object1.x
   object2.y = object1.y
 end
-
--- local anchorPoint = display.newRect(screenWidth, screenHeight, 5, 5)
--- anchorPoint:setFillColor( 0, 0, 1 )
--- display:insert(floorGroup)
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -86,14 +84,14 @@ function scene:show( event )
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
     registerEventListeners()
-    floor.draw(floorObjectsGroup, 5, 2)
+    floor.render(floorObjectsGroup, floorObjectsMatrix)
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     physics.start()
     physics.addBody(floorObjectsGroup, 'dynamic')
 
     floorObjectsGroup.gravityScale = 0
-    timer.performWithDelay( 1000, moveFloor )
+    --timer.performWithDelay( 1000, moveFloor )
   end
 end
 
@@ -117,6 +115,9 @@ function scene:destroy( event )
 
   -- Code here runs prior to the removal of scene's view
   character:destroy()
+  floor:destroy()
+  ui:destroy()
+  background:destroy()
 
   character = nil
   floor = nil

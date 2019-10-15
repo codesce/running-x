@@ -42,14 +42,25 @@ local function drawGrid(group)
 end
 -- END --
 
+-- translate the grid position to an (x,y) position on the grid
+local function getGridCoordinates(xGridPosition, yGridPosition)
+  local xPosition = xGridPosition+1
+  local yPosition = yGridPosition-1
+
+  local x = (xGap * xPosition) + ((lineXOffset / yLineCount) * yPosition)
+  local y = yGap * yPosition
+
+  return { x = x, y = y}
+end
+
 ----- DRAW OBJECT ----
-local function drawObject(group, xGridPosition, yGridPosition)
-  -- translate the grid position to an (x,y) position on the grid
-  local x = (xGap * xGridPosition) + ((lineXOffset / 5) * yGridPosition)
-  local y = yGap * yGridPosition
+local function drawGrassObject(group, xGridPosition, yGridPosition)
+  print("drawing grass object at: " .. xGridPosition .. ", " .. yGridPosition)
+
+  local coordinates = getGridCoordinates(xGridPosition, yGridPosition)
 
   -- draw the object!
-  local object = display.newRect(group, x, y, xGap, yGap)
+  local object = display.newRect(group, coordinates.x, coordinates.y, xGap, yGap)
   object.anchorX = 0
   object.anchorY = 0
   object:setFillColor( 0, 1, 0 )
@@ -62,5 +73,5 @@ end
 
 return {
   drawGrid = drawGrid,
-  drawObject = drawObject
+  drawGrassObject = drawGrassObject
 }

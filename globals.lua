@@ -5,5 +5,10 @@ return {
   centerY = display.contentCenterY,
 
   floorHeight = 420,
-  displayGrid = true
+  displayGrid = true,
+
+  objects = {
+    grass = "G",
+    empty = "O"
+  }
 }
