@@ -11,10 +11,14 @@ local O = globals.objects.empty
 --   { O, O, O, O, O, O, O, G, G, G, O, O, O, O, O, O, O, O, O, O, O, O, O, G, O, O, G, O, O, G, O, O, O, O, O, G, O, O, O, G },
 -- }
 
-return {
+local tiles = {
   { O,O,O,O,G,O,O },
   { O,O,O,G,O,O,O },
   { O,O,G,O,O,O,O },
   { O,O,O,G,O,O,O },
   { O,O,O,O,G,O,O },
+}
+
+return {
+  tiles = tiles
 }

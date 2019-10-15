@@ -7,7 +7,7 @@ local floor = require( "game.floor" )
 local character = require( "game.character" )
 local ui = require( "game.ui" )
 
-local floorObjectsMatrix = require( "game.level.A00001" )
+local level = require( "game.level.A00001" )
 
 local scene = composer.newScene()
 
@@ -31,8 +31,8 @@ local function goToHome()
 end
 
 local function registerEventListeners()
-  backgroundGroup:addEventListener('touch', character.move)
-  ui.getCloseButton():addEventListener('tap', goToHome)
+  backgroundGroup:addEventListener("touch", character.move)
+  ui.getCloseButton():addEventListener("tap", goToHome)
 end
 
 local function moveFloor(event)
@@ -84,11 +84,11 @@ function scene:show( event )
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
     registerEventListeners()
-    floor.render(floorObjectsGroup, floorObjectsMatrix)
+    floor.render(floorObjectsGroup, level)
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
     physics.start()
-    physics.addBody(floorObjectsGroup, 'dynamic')
+    physics.addBody(floorObjectsGroup, "dynamic")
 
     floorObjectsGroup.gravityScale = 0
     --timer.performWithDelay( 1000, moveFloor )

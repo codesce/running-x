@@ -3,16 +3,12 @@ local globals = require( "globals" )
 local floorHeight = globals.floorHeight
 local screenWidth = globals.screenWidth
 
--- variables for the vertical lines
 local lineXOffset = 150 --how far to the right the line goes in a diagonal direction
 local xGap = 120 -- space between grid lines
-
--- variables for the horizontal lines
 local yLineCount = 5  -- number of lines going across the screen
-local yGap = floorHeight / yLineCount  --gap between these lines
+local yGap = (floorHeight / yLineCount)  --gap between these lines
 
------ DRAW GRID ----
-local function drawGrid(group)
+local function draw(group)
   local lineX = 0
 
   local function drawLine(x1, y1, x2, y2)
@@ -40,10 +36,8 @@ local function drawGrid(group)
   drawVerticalLines()
   drawHorizontalLines()
 end
--- END --
 
--- translate the grid position to an (x,y) position on the grid
-local function getGridCoordinates(xGridPosition, yGridPosition)
+local function getCoordinates(xGridPosition, yGridPosition)
   local xPosition = xGridPosition+1
   local yPosition = yGridPosition-1
 
@@ -53,25 +47,11 @@ local function getGridCoordinates(xGridPosition, yGridPosition)
   return { x = x, y = y}
 end
 
------ DRAW OBJECT ----
-local function drawGrassObject(group, xGridPosition, yGridPosition)
-  print("drawing grass object at: " .. xGridPosition .. ", " .. yGridPosition)
-
-  local coordinates = getGridCoordinates(xGridPosition, yGridPosition)
-
-  -- draw the object!
-  local object = display.newRect(group, coordinates.x, coordinates.y, xGap, yGap)
-  object.anchorX = 0
-  object.anchorY = 0
-  object:setFillColor( 0, 1, 0 )
-
-  -- change corners of the rectangle so it becomes a parallelogram
-  object.path.x2 = (lineXOffset / yLineCount)
-  object.path.x3 = (lineXOffset / yLineCount)
-end
--- END --
-
 return {
-  drawGrid = drawGrid,
-  drawGrassObject = drawGrassObject
+  draw = draw,
+  getCoordinates = getCoordinates,
+  xGap = xGap,
+  yGap = yGap,
+  lineXOffset = lineXOffset,
+  yLineCount = yLineCount
 }
