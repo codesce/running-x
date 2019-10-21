@@ -1,13 +1,8 @@
 local globals = require( "globals" )
 local grid = require( "game.grid" )
 
-local currentFloorIndex = 1
-local currentTileLayout
-
-local function drawGrassObject(group, xGridPosition, yGridPosition)
-  print("drawing grass object at: " .. xGridPosition .. ", " .. yGridPosition)
-
-  local coordinates = grid.getCoordinates(xGridPosition, yGridPosition)
+local function drawGrassObject(group, coordinates)
+  print("drawing grass object at: " .. coordinates.x .. ", " .. coordinates.y)
 
   local object = display.newRect(group, coordinates.x, coordinates.y, grid.xGap, grid.yGap)
   object.anchorX = 0
@@ -18,22 +13,10 @@ local function drawGrassObject(group, xGridPosition, yGridPosition)
   object.path.x3 = (grid.lineXOffset / grid.yLineCount)
 end
 
-local function render(group, level)
-  currentTileLayout = level.tiles
-
-  for columnIndex=1,#currentTileLayout[1] do -- 1 to X
-    for rowIndex=1,#currentTileLayout do -- 1 to 5
-      local tile = currentTileLayout[rowIndex][columnIndex]
-      if (tile == globals.objects.grass) then
-        drawGrassObject(group, columnIndex, rowIndex)
-      end
+local function render(group, tile, coordinates)
+    if (tile == globals.objects.grass) then
+      drawGrassObject(group, coordinates)
     end
-  end
-end
-
-local function destroy()
-  currentFloorIndex = 0
-  currentTileLayout = nil
 end
 
 return {

@@ -44,7 +44,7 @@ local function getCoordinates(xGridPosition, yGridPosition)
   local x = (xGap * xPosition) + ((lineXOffset / yLineCount) * yPosition)
   local y = yGap * yPosition
 
-  return { x = x, y = y}
+  return { x = x, y = y }
 end
 
 return {

@@ -74,6 +74,8 @@ function scene:create( event )
   floor.init(floorGroup)
   character.init(gameObjectsGroup, 0, floorHeight/2)
   ui.init(uiGroup)
+
+  floor.render(floorObjectsGroup, level)
 end
 
 
@@ -84,13 +86,12 @@ function scene:show( event )
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
     registerEventListeners()
-    floor.render(floorObjectsGroup, level)
+
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
-    physics.start()
-    physics.addBody(floorObjectsGroup, "dynamic")
-
-    floorObjectsGroup.gravityScale = 0
+    -- physics.start()
+    -- physics.addBody(floorObjectsGroup, "dynamic")
+    -- floorObjectsGroup.gravityScale = 0
     --timer.performWithDelay( 1000, moveFloor )
   end
 end

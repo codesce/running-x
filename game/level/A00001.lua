@@ -12,11 +12,11 @@ local O = globals.objects.empty
 -- }
 
 local tiles = {
-  { O,O,O,O,G,O,O },
-  { O,O,O,G,O,O,O },
-  { O,O,G,O,O,O,O },
-  { O,O,O,G,O,O,O },
-  { O,O,O,O,G,O,O },
+  { O,O,O,O,G,G,G,O,O },
+  { O,O,O,G,O,G,O,G,G },
+  { O,O,G,O,O,G,O,O,O },
+  { O,O,O,G,O,G,O,G,G },
+  { O,O,O,O,G,G,G,O,O },
 }
 
 return {
