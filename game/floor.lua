@@ -24,6 +24,10 @@ local function render(group, level)
   floorRenderer.render(group, level)
 end
 
+local function renderNext(group)
+  floorRenderer.renderNext(group)
+end
+
 local function destroy()
   floorRenderer.destroy()
 end
@@ -31,5 +35,6 @@ end
 return {
   init = init,
   render = render,
+  renderNext = renderNext,
   destroy = destroy
 }

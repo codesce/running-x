@@ -11,6 +11,9 @@ local level = require( "game.level.A00001" )
 
 local scene = composer.newScene()
 
+physics.start()
+physics.setGravity( 0, 0 )
+
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -30,9 +33,14 @@ local function goToHome()
   composer.gotoScene( "home", { time=800, effect="crossFade" } )
 end
 
+local function doThis()
+  floor.renderNext(floorObjectsGroup)
+end
+
 local function registerEventListeners()
   backgroundGroup:addEventListener("touch", character.move)
   ui.getCloseButton():addEventListener("tap", goToHome)
+  Runtime:addEventListener("enterFrame", doThis)
 end
 
 local function moveFloor(event)
@@ -89,13 +97,11 @@ function scene:show( event )
 
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
-    -- physics.start()
-    -- physics.addBody(floorObjectsGroup, "dynamic")
-    -- floorObjectsGroup.gravityScale = 0
-    --timer.performWithDelay( 1000, moveFloor )
+    physics.addBody(floorObjectsGroup, "dynamic")
+    floorObjectsGroup.gravityScale = 0
+    timer.performWithDelay( 1000, moveFloor )
   end
 end
-
 
 function scene:hide( event )
   local sceneGroup = self.view
@@ -105,6 +111,7 @@ function scene:hide( event )
     -- Code here runs when the scene is on screen (but is about to go off screen)
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
+    Runtime:removeEventListener("enterFrame", doThis)
     physics.pause()
     composer.removeScene( "game" )
   end
