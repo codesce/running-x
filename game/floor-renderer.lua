@@ -5,72 +5,77 @@ local grid = require( "game.grid" )
 local minXValue = 0
 local maxXValue = globals.screenWidth
 
-local currentFloorIndex
-local currentFloorXIndex = minXValue
-local currentFloorXObject
+local lastRenderedColumn = {
+  index = nil,
+  x = minXValue,
+  object = nil
+}
 
+-- stores the tile table of the current level
 local gridLayoutTiles
 
+-- stores the tiles that are currently rendered on screen
+local currentDisplayedTiles = {}
+
 local function getXForCurrentIndex()
-  return grid.getCoordinates(currentFloorIndex, 1).x
+  return grid.getCoordinates(lastRenderedColumn.index, 1).x
 end
 
-local function init()
-  currentFloorIndex = 1
-  currentFloorXIndex = getXForCurrentIndex()
-end
-
--- given the x coordinate, determine if visible
+-- given the x coordinate, determine if visible on screen
 local function isVisible(x)
   return (x >= minXValue and x <= maxXValue)
 end
 
--- this essentially renders initial tiles!
+-- renders all the tiles in the current column
+local function renderTileColumn(group)
+  if (lastRenderedColumn.index > #gridLayoutTiles) then
+    return
+  end
+
+  for rowIndex=1,5 do
+    local tile = gridLayoutTiles[lastRenderedColumn.index][rowIndex]
+    local coordinates = grid.getCoordinates(lastRenderedColumn.index, rowIndex)
+    local renderedTile = tileRenderer.render( group, tile, coordinates )
+    table.insert(currentDisplayedTiles, renderedTile)
+  end
+
+  lastRenderedColumn.index = lastRenderedColumn.index + 1
+  lastRenderedColumn.x = getXForCurrentIndex()
+
+  -- add small rect to current render point for future rendering
+  display.remove(lastRenderedColumn.object)
+  lastRenderedColumn.object = display.newRect( group, lastRenderedColumn.x, 0, 5, 5 )
+  lastRenderedColumn.object:setFillColor( 1, 0, 0 )
+end
+
+local function init()
+  lastRenderedColumn.index = 1
+  lastRenderedColumn.x = getXForCurrentIndex()
+end
+
+-- renders initial tiles!
 local function render(group, level)
   gridLayoutTiles = level.tiles
 
--- only render currently viewable tile columns
-  while (isVisible(currentFloorXIndex)) do
-    print("floor is visible at current floor index: " .. currentFloorIndex .. " (x: " .. currentFloorXIndex .. ")")
-
-    for rowIndex=1,#gridLayoutTiles do -- 1 to 5
-      local tile = gridLayoutTiles[rowIndex][currentFloorIndex]
-      local coordinates = grid.getCoordinates(currentFloorIndex, rowIndex)
-      tileRenderer.render( group, tile, coordinates )
-    end
-
-    currentFloorIndex = currentFloorIndex + 1
-    currentFloorXIndex = getXForCurrentIndex()
+  while (isVisible(lastRenderedColumn.x)) do
+    renderTileColumn(group)
   end
-
-  -- add small rect to current render point for future rendering
-  currentFloorXObject = display.newRect( group, currentFloorXIndex, 0, 5, 5 )
-  currentFloorXObject:setFillColor( 1, 0, 0 )
-
-  print("finished rendering tiles")
 end
 
--- this function will be called on a game loop!
--- this should determine:
---     1. if the next line should be rendered (about to come on screen)
---     2. if any blocks should be removed
+-- THIS FUNCTION WILL BE CALLED ON A GAME LOOP!
+-- this should determine if the next column should be rendered (about to come on screen)
 local function renderNext(group)
-  local x = currentFloorXObject:localToContent(0,0)
+  local x = lastRenderedColumn.object:localToContent(0,0)
 
   if (isVisible(x)) then
-    -- render next line!
-    for rowIndex=1,#gridLayoutTiles do
-    end
-
-    -- reset the current x index point!
+    renderTileColumn(group)
   end
 end
 
-
 local function destroy()
-  currentFloorIndex = nil
-  currentFloorXIndex = nil
+  lastRenderedColumn = nil
   gridLayoutTiles = nil
+  currentDisplayedTiles = nil
 end
 
 return {

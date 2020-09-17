@@ -1,6 +1,8 @@
 local globals = require( "globals" )
 local grid = require( "game.grid" )
 
+-- This module is responsible for renderering the tiles onto the floor
+
 local function drawGrassObject(group, coordinates)
   print("drawing grass object at: " .. coordinates.x .. ", " .. coordinates.y)
 
@@ -11,11 +13,14 @@ local function drawGrassObject(group, coordinates)
 
   object.path.x2 = (grid.lineXOffset / grid.yLineCount)
   object.path.x3 = (grid.lineXOffset / grid.yLineCount)
+
+  return object
 end
 
+-- creates the tile object on the display group and returns it
 local function render(group, tile, coordinates)
     if (tile == globals.objects.grass) then
-      drawGrassObject(group, coordinates)
+      return drawGrassObject(group, coordinates)
     end
 end
 
