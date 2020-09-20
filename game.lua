@@ -2,6 +2,7 @@ local composer = require( "composer" )
 local globals = require( "globals" )
 local physics = require( "physics" )
 
+local utils = require ( "utils" )
 local background = require ( "game.background" )
 local floor = require( "game.floor" )
 local character = require( "game.character" )
@@ -29,27 +30,24 @@ local floorObjectsGroup
 local gameObjectsGroup
 local uiGroup
 
+local gameTimer
+
 local function goToHome()
   composer.gotoScene( "home", { time=800, effect="crossFade" } )
 end
 
-local function doThis()
-  floor.renderNext(floorObjectsGroup)
+local function renderNextFrame()
+  floor.render()
 end
 
 local function registerEventListeners()
   backgroundGroup:addEventListener("touch", character.move)
   ui.getCloseButton():addEventListener("tap", goToHome)
-  Runtime:addEventListener("enterFrame", doThis)
+  Runtime:addEventListener("enterFrame", renderNextFrame)
 end
 
 local function moveFloor(event)
-  floorObjectsGroup:setLinearVelocity(-300, 0)
-end
-
-local function copyCoordinates (object1, object2)
-  object2.x = object1.x
-  object2.y = object1.y
+  floor.move()
 end
 
 -- -----------------------------------------------------------------------------------
@@ -75,15 +73,13 @@ function scene:create( event )
   -- set these groups to all have the same (x,y) start point
   floorGroup.x = 0
   floorGroup.y = (screenHeight - floorHeight)
-  copyCoordinates(floorGroup, floorObjectsGroup)
-  copyCoordinates(floorGroup, gameObjectsGroup)
+  utils.copyCoordinates(floorGroup, floorObjectsGroup)
+  utils.copyCoordinates(floorGroup, gameObjectsGroup)
 
   background.init(backgroundGroup)
-  floor.init(floorGroup)
+  floor.init(floorGroup, floorObjectsGroup, level)
   character.init(gameObjectsGroup, 0, floorHeight/2)
   ui.init(uiGroup)
-
-  floor.render(floorObjectsGroup, level)
 end
 
 
@@ -99,7 +95,7 @@ function scene:show( event )
     -- Code here runs when the scene is entirely on screen
     physics.addBody(floorObjectsGroup, "dynamic")
     floorObjectsGroup.gravityScale = 0
-    timer.performWithDelay( 1000, moveFloor )
+    gameTimer = timer.performWithDelay( 1000, moveFloor )
   end
 end
 
@@ -122,6 +118,9 @@ function scene:destroy( event )
   local sceneGroup = self.view
 
   -- Code here runs prior to the removal of scene's view
+  Runtime:removeEventListener("enterFrame", renderNextFrame)
+  timer.cancel(gameTimer)
+
   character:destroy()
   floor:destroy()
   ui:destroy()

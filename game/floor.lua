@@ -7,7 +7,15 @@ local screenWidth = globals.screenWidth
 local screenHeight = globals.screenHeight
 local displayGrid = globals.displayGrid
 
-local function init(group, level)
+local group
+local objectsGroup
+local level
+
+local function init(floorGroup, floorObjectsGroup, aLevel)
+  group = floorGroup
+  objectsGroup = floorObjectsGroup
+  level = aLevel
+
   local floor = display.newRect( group, 0, 0, screenWidth, floorHeight )
   floor:setFillColor( 0.8 )
   floor.anchorX = 0
@@ -17,24 +25,28 @@ local function init(group, level)
      grid.draw(group)
    end
 
-   floorRenderer.init()
+   floorRenderer.init(objectsGroup, level)
 end
 
-local function render(group, level)
-  floorRenderer.render(group, level)
+local function render()
+  floorRenderer.render(objectsGroup)
 end
 
-local function renderNext(group)
-  floorRenderer.renderNext(group)
+local function move(event)
+  objectsGroup:setLinearVelocity(-300, 0)
 end
 
 local function destroy()
   floorRenderer.destroy()
+  group = nil
+  level = nil
+  objectsGroup = nil
 end
 
 return {
   init = init,
   render = render,
   renderNext = renderNext,
+  move = move,
   destroy = destroy
 }

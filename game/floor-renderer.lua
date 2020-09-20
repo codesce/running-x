@@ -48,13 +48,10 @@ local function renderTileColumn(group)
   lastRenderedColumn.object:setFillColor( 1, 0, 0 )
 end
 
-local function init()
+local function init(group, level)
   lastRenderedColumn.index = 1
   lastRenderedColumn.x = getXForCurrentIndex()
-end
 
--- renders initial tiles!
-local function render(group, level)
   gridLayoutTiles = level.tiles
 
   while (isVisible(lastRenderedColumn.x)) do
@@ -64,7 +61,7 @@ end
 
 -- THIS FUNCTION WILL BE CALLED ON A GAME LOOP!
 -- this should determine if the next column should be rendered (about to come on screen)
-local function renderNext(group)
+local function render(group)
   local x = lastRenderedColumn.object:localToContent(0,0)
 
   if (isVisible(x)) then
