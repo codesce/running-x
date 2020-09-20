@@ -6,30 +6,13 @@ local displayCurrentTileObject = false
 local minXValue = 0
 local maxXValue = globals.screenWidth
 
-local lastRenderedColumn = {
-  index = nil,
-  x = minXValue,
-  object = nil,
-  -- this renders an object on screen which allows us to determine the coordinates for last rendered column
-  renderObject = function (self, group)
-    if (self) then
-      display.remove(self.object)
-    end
-
-    self.object = display.newRect( group, self.x, 0, 5, 5 )
-    self.object:setFillColor( 1, 0, 0,  displayCurrentTileObject and 1 or 0 )
-  end
-}
+local lastRenderedColumn
 
 -- stores the tile table of the current level
 local gridLayoutTiles
 
 -- stores the tiles that are currently rendered on screen
-local currentDisplayedTiles = {}
-
----------------------------------------------
------             Private               -----
----------------------------------------------
+local currentDisplayedTiles
 
 local function getXForCurrentIndex()
   return grid.getCoordinates(lastRenderedColumn.index, 1).x
@@ -82,14 +65,28 @@ local function cleanup (group)
   end
 end
 
+local function initLastRenderedColumn()
+  lastRenderedColumn = {
+    index = 1,
+    x = minXValue,
+    object = nil,
+    renderObject = function (self, group)
+      if (self) then display.remove(self.object) end
+      self.object = display.newRect( group, self.x, 0, 5, 5 )
+      self.object:setFillColor( 1, 0, 0,  displayCurrentTileObject and 1 or 0 )
+    end
+  }
+end
+
 ---------------------------------------------
 -----             Public                -----
 ---------------------------------------------
 
 local function init(group, level)
-  lastRenderedColumn.index = 1
-  lastRenderedColumn.x = getXForCurrentIndex()
+  initLastRenderedColumn()
 
+  lastRenderedColumn.x = getXForCurrentIndex()
+  currentDisplayedTiles = {}
   gridLayoutTiles = level.tiles
 
   --render the initial view
@@ -99,7 +96,6 @@ local function init(group, level)
 end
 
 -- THIS FUNCTION WILL BE CALLED ON A GAME LOOP!
--- this should determine if the next column should be rendered (about to come on screen)
 local function render(group)
   renderIncoming(group)
   cleanup(group)

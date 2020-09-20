@@ -6,6 +6,7 @@ return {
 
   floorHeight = 420,
   displayGrid = true,
+  clipFloorObjects = true,
 
   objects = {
     grass = "G",

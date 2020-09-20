@@ -7,7 +7,6 @@ local background = require ( "game.background" )
 local floor = require( "game.floor" )
 local character = require( "game.character" )
 local ui = require( "game.ui" )
-
 local level = require( "game.level.A00001" )
 
 local scene = composer.newScene()
@@ -23,6 +22,7 @@ physics.setGravity( 0, 0 )
 local screenWidth = globals.screenWidth
 local screenHeight = globals.screenHeight
 local floorHeight = globals.floorHeight
+local clipFloorObjects = globals.clipFloorObjects
 
 local backgroundGroup
 local floorGroup
@@ -64,17 +64,30 @@ function scene:create( event )
   gameObjectsGroup = display.newGroup()
   uiGroup = display.newGroup()
 
-  sceneGroup:insert(backgroundGroup)
-  sceneGroup:insert(floorGroup)
-  sceneGroup:insert(floorObjectsGroup)
-  sceneGroup:insert(gameObjectsGroup)
-  sceneGroup:insert(uiGroup)
+  local container
+
+  if (clipFloorObjects) then
+    container = display.newContainer(screenWidth, screenHeight)
+  else
+    container = display.newGroup()
+  end
+
+  container.anchorX = 0
+  container.anchorY = 0
+  container.anchorChildren = false
+  container:insert(floorGroup)
+  container:insert(floorObjectsGroup)
+  container:insert(gameObjectsGroup)
 
   -- set these groups to all have the same (x,y) start point
   floorGroup.x = 0
   floorGroup.y = (screenHeight - floorHeight)
   utils.copyCoordinates(floorGroup, floorObjectsGroup)
   utils.copyCoordinates(floorGroup, gameObjectsGroup)
+
+  sceneGroup:insert(backgroundGroup)
+  sceneGroup:insert(container)
+  sceneGroup:insert(uiGroup)
 
   background.init(backgroundGroup)
   floor.init(floorGroup, floorObjectsGroup, level)
