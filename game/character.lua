@@ -1,6 +1,6 @@
 local globals = require( "globals" )
 
-local floorHeight = globals.floorHeight
+local floorHeight = globals.floor.height
 
 local image = "images/character.png"
 

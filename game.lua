@@ -21,8 +21,8 @@ physics.setGravity( 0, 0 )
 
 local screenWidth = globals.screenWidth
 local screenHeight = globals.screenHeight
-local floorHeight = globals.floorHeight
-local clipFloorObjects = globals.clipFloorObjects
+local floorHeight = globals.floor.height
+local clipFloorObjects = globals.floor.clipObjects
 
 local backgroundGroup
 local floorGroup

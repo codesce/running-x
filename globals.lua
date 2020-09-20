@@ -4,9 +4,17 @@ return {
   centerX = display.contentCenterX,
   centerY = display.contentCenterY,
 
-  floorHeight = 420,
-  displayGrid = true,
-  clipFloorObjects = true,
+  floor = {
+    height = 420,
+    clipObjects = true
+  },
+
+  grid = {
+    skew = 120,
+    columnWidth = 120,
+    rowCount = 5,
+    displayLines = true
+  },
 
   objects = {
     grass = "G",

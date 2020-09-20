@@ -2,10 +2,10 @@ local globals = require( "globals" )
 local grid = require( "game.grid" )
 local floorRenderer = require( "game.floor-renderer" )
 
-local floorHeight = globals.floorHeight
+local floorHeight = globals.floor.height
 local screenWidth = globals.screenWidth
 local screenHeight = globals.screenHeight
-local displayGrid = globals.displayGrid
+local displayGrid = globals.grid.displayLines
 
 local group
 local objectsGroup

@@ -1,7 +1,9 @@
 local globals = require( "globals" )
 local grid = require( "game.grid" )
 
-local tileSkewWidth = (grid.lineXOffset / grid.yLineCount)
+local tileSkewWidth = (grid.lineXOffset / grid.gridRowCount)
+
+local grass = globals.objects.grass
 
 -- This module is responsible for renderering the tiles onto the floor
 
@@ -25,7 +27,7 @@ end
 
 -- creates the tile object on the display group and returns it
 local function render(group, tile, coordinates)
-    if (tile == globals.objects.grass) then
+    if (tile == grass) then
       return drawGrassObject(group, coordinates)
     end
 end

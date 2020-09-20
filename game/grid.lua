@@ -1,12 +1,12 @@
 local globals = require( "globals" )
 
-local floorHeight = globals.floorHeight
+local floorHeight = globals.floor.height
 local screenWidth = globals.screenWidth
 
-local lineXOffset = 150 --how far to the right the line goes in a diagonal direction
-local xGap = 120 -- space between grid lines
-local yLineCount = 5  -- number of lines going across the screen
-local yGap = (floorHeight / yLineCount)  --gap between these lines
+local lineXOffset = globals.grid.skew --how far to the right the line goes in a diagonal direction
+local xGap = globals.grid.columnWidth -- space between grid lines
+local gridRowCount = globals.grid.rowCount  -- number of lines going across the screen
+local yGap = (floorHeight / gridRowCount)  --gap between these lines
 
 local function draw(group)
   local lineX = 0
@@ -27,7 +27,7 @@ local function draw(group)
   local function drawHorizontalLines()
     local lineY = 0 + yGap
 
-    for i=1, yLineCount-1 do
+    for i=1, gridRowCount-1 do
       drawLine(0, lineY, screenWidth, lineY)
       lineY = lineY + yGap
     end
@@ -41,7 +41,7 @@ local function getCoordinates(xGridPosition, yGridPosition)
   local xPosition = xGridPosition+1
   local yPosition = yGridPosition-1
 
-  local x = (xGap * xPosition) + ((lineXOffset / yLineCount) * yPosition)
+  local x = (xGap * xPosition) + ((lineXOffset / gridRowCount) * yPosition)
   local y = yGap * yPosition
 
   return { x = x, y = y }
@@ -53,5 +53,5 @@ return {
   xGap = xGap,
   yGap = yGap,
   lineXOffset = lineXOffset,
-  yLineCount = yLineCount
+  gridRowCount = gridRowCount
 }
