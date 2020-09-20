@@ -2,13 +2,23 @@ local globals = require( "globals" )
 local tileRenderer = require( "game.tile-renderer" )
 local grid = require( "game.grid" )
 
+local displayCurrentTileObject = false
 local minXValue = 0
 local maxXValue = globals.screenWidth
 
 local lastRenderedColumn = {
   index = nil,
   x = minXValue,
-  object = nil
+  object = nil,
+  -- this renders an object on screen which allows us to determine the coordinates for last rendered column
+  renderObject = function (self, group)
+    if (self) then
+      display.remove(self.object)
+    end
+
+    self.object = display.newRect( group, self.x, 0, 5, 5 )
+    self.object:setFillColor( 1, 0, 0,  displayCurrentTileObject and 1 or 0 )
+  end
 }
 
 -- stores the tile table of the current level
@@ -17,6 +27,10 @@ local gridLayoutTiles
 -- stores the tiles that are currently rendered on screen
 local currentDisplayedTiles = {}
 
+---------------------------------------------
+-----             Private               -----
+---------------------------------------------
+
 local function getXForCurrentIndex()
   return grid.getCoordinates(lastRenderedColumn.index, 1).x
 end
@@ -24,6 +38,10 @@ end
 -- given the x coordinate, determine if visible on screen
 local function isVisible(x)
   return (x >= minXValue and x <= maxXValue)
+end
+
+local function isOffScreen(x)
+  return (x <= minXValue)
 end
 
 -- renders all the tiles in the current column
@@ -41,12 +59,32 @@ local function renderTileColumn(group)
 
   lastRenderedColumn.index = lastRenderedColumn.index + 1
   lastRenderedColumn.x = getXForCurrentIndex()
-
-  -- add small rect to current render point for future rendering
-  display.remove(lastRenderedColumn.object)
-  lastRenderedColumn.object = display.newRect( group, lastRenderedColumn.x, 0, 5, 5 )
-  lastRenderedColumn.object:setFillColor( 1, 0, 0 )
+  lastRenderedColumn:renderObject(group)
 end
+
+local function renderIncoming (group)
+  local x = lastRenderedColumn.object:localToContent(0,0)
+
+  if (isVisible(x)) then
+    renderTileColumn(group)
+  end
+end
+
+local function cleanup (group)
+  for i = #currentDisplayedTiles, 1, -1 do
+    local currentTile = currentDisplayedTiles[i]
+    local currentTileBottomRightX = currentTile:localToContent(0,0) + currentTile.fullWidth
+
+    if (isOffScreen(currentTileBottomRightX)) then
+      display.remove(currentDisplayedTiles[i])
+      table.remove(currentDisplayedTiles, i)
+    end
+  end
+end
+
+---------------------------------------------
+-----             Public                -----
+---------------------------------------------
 
 local function init(group, level)
   lastRenderedColumn.index = 1
@@ -54,6 +92,7 @@ local function init(group, level)
 
   gridLayoutTiles = level.tiles
 
+  --render the initial view
   while (isVisible(lastRenderedColumn.x)) do
     renderTileColumn(group)
   end
@@ -62,11 +101,8 @@ end
 -- THIS FUNCTION WILL BE CALLED ON A GAME LOOP!
 -- this should determine if the next column should be rendered (about to come on screen)
 local function render(group)
-  local x = lastRenderedColumn.object:localToContent(0,0)
-
-  if (isVisible(x)) then
-    renderTileColumn(group)
-  end
+  renderIncoming(group)
+  cleanup(group)
 end
 
 local function destroy()
