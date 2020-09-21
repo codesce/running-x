@@ -5,13 +5,14 @@ return {
   centerY = display.contentCenterY,
 
   floor = {
-    height = 420,
-    clipObjects = true
+    height = 270,
+    clipObjects = true,
+    marginBottom = 50
   },
 
   grid = {
     skew = 120,
-    columnWidth = 120,
+    columnWidth = 90,
     rowCount = 5,
     displayLines = true
   },

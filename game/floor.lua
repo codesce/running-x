@@ -46,7 +46,6 @@ end
 return {
   init = init,
   render = render,
-  renderNext = renderNext,
   move = move,
   destroy = destroy
 }

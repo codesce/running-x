@@ -22,6 +22,7 @@ physics.setGravity( 0, 0 )
 local screenWidth = globals.screenWidth
 local screenHeight = globals.screenHeight
 local floorHeight = globals.floor.height
+local floorMarginBottom = globals.floor.marginBottom
 local clipFloorObjects = globals.floor.clipObjects
 
 local backgroundGroup
@@ -81,7 +82,7 @@ function scene:create( event )
 
   -- set these groups to all have the same (x,y) start point
   floorGroup.x = 0
-  floorGroup.y = (screenHeight - floorHeight)
+  floorGroup.y = ((screenHeight - floorHeight) - floorMarginBottom)
   utils.copyCoordinates(floorGroup, floorObjectsGroup)
   utils.copyCoordinates(floorGroup, gameObjectsGroup)
 
