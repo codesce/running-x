@@ -2,7 +2,7 @@ local globals = require( "globals" )
 
 local floorHeight = globals.floor.height
 
-local image = "images/character.png"
+local image = "images/character/stationary.png"
 
 -- how fast does the character move up and down
 local characterMovementRatio = 1.3
@@ -15,8 +15,6 @@ local character
 
 local function init(group, x, y)
   character = display.newImage( group, image, x, y )
-
-  -- for now, we are initialising the anchor points here, but should it go here??
   character.anchorX = 0
   character.anchorY = 1
 end
