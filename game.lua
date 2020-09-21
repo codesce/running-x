@@ -25,6 +25,11 @@ local floorHeight = globals.floor.height
 local floorMarginBottom = globals.floor.marginBottom
 local clipFloorObjects = globals.floor.clipObjects
 
+local controls = {
+    running = globals.controls.run,
+    stop = globals.controls.slow
+}
+
 local backgroundGroup
 local floorGroup
 local floorObjectsGroup
@@ -41,10 +46,20 @@ local function renderNextFrame()
   floor.render()
 end
 
+local function handleKeyPress(event)
+  local key = event.keyName
+
+  if (key == controls.running) then
+    character.run()
+  elseif (key == controls.stop) then
+    character.stop()
+  end
+end
+
 local function registerEventListeners()
   backgroundGroup:addEventListener("touch", character.move)
   ui.getCloseButton():addEventListener("tap", goToHome)
-  Runtime:addEventListener("enterFrame", renderNextFrame)
+  Runtime:addEventListener("key", handleKeyPress)
 end
 
 local function moveFloor(event)

@@ -17,6 +17,11 @@ return {
     displayLines = false
   },
 
+  controls = {
+    run = "s",
+    slow = "a"
+  },
+
   objects = {
     grass = "G",
     empty = "O"
