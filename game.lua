@@ -133,6 +133,7 @@ function scene:destroy( event )
 
   -- Code here runs prior to the removal of scene's view
   Runtime:removeEventListener("enterFrame", renderNextFrame)
+  backgroundGroup:removeEventListener("touch", character.move)
   timer.cancel(gameTimer)
 
   character:destroy()

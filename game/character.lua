@@ -4,9 +4,12 @@ local floorHeight = globals.floor.height
 
 local image = "images/character.png"
 
+-- how fast does the character move up and down
 local characterMovementRatio = 1.3
+-- y-coordinate of character
 local currentCharacterPosition = 0
-local characterBottomOffset = 8  -- caused by bottom of image having 8 pixels of space
+ -- caused by bottom of image having 8 pixels of space
+local characterBottomOffset = 8
 
 local character
 
@@ -24,11 +27,10 @@ local function move(event)
 
   if ("began" == phase) then
     currentCharacterPosition = event.y
-    -- display.currentStage:setFocus(backgroundGroup) -- TODO: determine if required
+
   elseif ("moved" == phase) then
     local newPosition = character.y + ((event.y - currentCharacterPosition) * characterMovementRatio)
 
-    -- TODO: move the bounds checking to the floor object/module
     if (newPosition > characterBottomOffset and (newPosition < floorHeight+characterBottomOffset)) then
       character.y = newPosition
     end

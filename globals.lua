@@ -14,7 +14,7 @@ return {
     skew = 120,
     columnWidth = 90,
     rowCount = 5,
-    displayLines = true
+    displayLines = false
   },
 
   objects = {
