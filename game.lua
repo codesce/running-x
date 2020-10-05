@@ -155,11 +155,6 @@ function scene:destroy( event )
   floor:destroy()
   ui:destroy()
   background:destroy()
-
-  character = nil
-  floor = nil
-  background = nil
-  ui = nil
 end
 
 
