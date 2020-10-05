@@ -2,56 +2,61 @@ local globals = require( "globals" )
 
 local floorHeight = globals.floor.height
 
-local imageStandingPath = "images/character/stationary.png"
-local imageRunningPath = "images/character/running.png"
+local standingAnimation = {
+  imagePath = "images/character/stationary.png"
+}
 
-local runningSheetOptions = {
+local runningAnimation = {
+  imagePath = "images/character/running.png",
+  sheetOptions = {
     width = 100,
     height = 90,
     numFrames = 5
-}
-
-local runningSequence = {
+  },
+  sequence = {
     {
-        name = "run",
-        start = 1,
-        count = 5,
-        time = 300,
-        loopCount = 0,
-        loopDirection = "forward"
+      name = "run",
+      start = 1,
+      count = 5,
+      time = 300,
+      loopCount = 0,
+      loopDirection = "forward"
     }
+  }
 }
 
 -- how fast does the character move up and down
 local characterMovementRatio = 1.3
+
 -- y-coordinate of character
 local currentCharacterPosition = 0
+
  -- caused by bottom of image having 8 pixels of space
 local characterBottomOffset = 8
 
-local character
-
+-- the displayed character image
+local sprite
 
 local function run()
-  character:play()
+  sprite:play()
 end
 
 local function stop()
-  character:pause()
+  sprite:pause()
 end
 
 local function init(group, x, y)
-  local runningImageSheet = graphics.newImageSheet( imageRunningPath, runningSheetOptions )
-  local imageRunning = display.newSprite( runningImageSheet, runningSequence )
+  local runningImageSheet = graphics.newImageSheet( runningAnimation.imagePath, runningAnimation.sheetOptions )
+  local imageRunning = display.newSprite( runningImageSheet, runningAnimation.sequence )
 
-  character = imageRunning
+  sprite = imageRunning
 
-  character.anchorX = 0
-  character.anchorY = 1
-  character.x = x
-  character.y = y
+  sprite.anchorX = 0
+  sprite.anchorY = 1
+  sprite.x = x
+  sprite.y = y
 
-  group:insert(character)
+  group:insert(sprite)
 end
 
 -- this is the function that moves the character along the Y axis
@@ -62,15 +67,15 @@ local function move(event)
     currentCharacterPosition = event.y
 
   elseif ("moved" == phase) then
-    local newPosition = character.y + ((event.y - currentCharacterPosition) * characterMovementRatio)
+    local newPosition = sprite.y + ((event.y - currentCharacterPosition) * characterMovementRatio)
 
     if (newPosition > characterBottomOffset and (newPosition < floorHeight+characterBottomOffset)) then
-      character.y = newPosition
+      sprite.y = newPosition
     end
 
     currentCharacterPosition = event.y
   elseif ("ended" == phase or "cancelled" == phase) then
-    currentCharacterPosition = character.y
+    currentCharacterPosition = sprite.y
     display.currentStage:setFocus(nil)
   end
 
@@ -78,9 +83,9 @@ local function move(event)
 end
 
 local function destroy()
-  display.remove(character)
+  display.remove(sprite)
   display.remove(imageRunning)
-  character = nil
+  sprite = nil
   imageRunning = nil
 end
 
