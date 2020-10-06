@@ -1,29 +1,7 @@
 local globals = require( "globals" )
+local animations = require ( "game.character.animations" )
 
 local floorHeight = globals.floor.height
-
-local standingAnimation = {
-  imagePath = "images/character/stationary.png"
-}
-
-local runningAnimation = {
-  imagePath = "images/character/running.png",
-  sheetOptions = {
-    width = 100,
-    height = 90,
-    numFrames = 5
-  },
-  sequence = {
-    {
-      name = "run",
-      start = 1,
-      count = 5,
-      time = 300,
-      loopCount = 0,
-      loopDirection = "forward"
-    }
-  }
-}
 
 -- how fast does the character move up and down
 local characterMovementRatio = 1.3
@@ -37,19 +15,12 @@ local characterBottomOffset = 8
 -- the displayed character image
 local sprite
 
-local function run()
-  sprite:play()
-end
-
-local function stop()
-  sprite:pause()
-end
+---------------------------------------------
+-----             Public                -----
+---------------------------------------------
 
 local function init(group, x, y)
-  local runningImageSheet = graphics.newImageSheet( runningAnimation.imagePath, runningAnimation.sheetOptions )
-  local imageRunning = display.newSprite( runningImageSheet, runningAnimation.sequence )
-
-  sprite = imageRunning
+  sprite = animations.sprites.create()
 
   sprite.anchorX = 0
   sprite.anchorY = 1
@@ -57,7 +28,10 @@ local function init(group, x, y)
   sprite.y = y
 
   group:insert(sprite)
+
+  sprite:play()
 end
+
 
 -- this is the function that moves the character along the Y axis
 local function move(event)
@@ -80,6 +54,15 @@ local function move(event)
   end
 
   return true -- prevents touch propagation to underlying objects
+end
+
+local function run()
+  sprite:setSequence("run")
+  sprite:play()
+end
+
+local function stop()
+  sprite:pause()
 end
 
 local function destroy()
