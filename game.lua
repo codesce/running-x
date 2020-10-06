@@ -107,7 +107,7 @@ function scene:create( event )
 
   background.init(backgroundGroup)
   floor.init(floorGroup, floorObjectsGroup, level)
-  character.init(gameObjectsGroup, 0, floorHeight/2)
+  character.init(gameObjectsGroup, globals.character.startX, floorHeight/2)
   ui.init(uiGroup)
 end
 

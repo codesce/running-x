@@ -25,5 +25,9 @@ return {
   objects = {
     grass = "G",
     empty = "O"
+  },
+
+  character = {
+    startX = 50
   }
 }
