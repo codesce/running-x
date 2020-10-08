@@ -19,7 +19,7 @@ local sprite
 -----             Public                -----
 ---------------------------------------------
 
-local function init(group, x, y)
+local function create(group, x, y)
   sprite = animations.sprites.create()
 
   sprite.anchorX = 0
@@ -74,7 +74,7 @@ end
 
 
 return {
-  init = init,
+  create = create,
   move = move,
   run = run,
   slow = slow,

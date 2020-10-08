@@ -7,7 +7,7 @@ local background = require ( "game.background" )
 local floor = require( "game.floor" )
 local character = require( "game.character" )
 local ui = require( "game.ui" )
-local level = require( "game.level.A00001" )
+local level = require( "game.level" )
 
 local scene = composer.newScene()
 
@@ -107,10 +107,11 @@ function scene:create( event )
   sceneGroup:insert(container)
   sceneGroup:insert(uiGroup)
 
-  background.init(backgroundGroup)
-  floor.init(floorGroup, floorObjectsGroup, level)
-  character.init(gameObjectsGroup, globals.character.startX, floorHeight/2)
-  ui.init(uiGroup)
+  level.create()
+  background.create(backgroundGroup)
+  floor.create(floorGroup, floorObjectsGroup, level)
+  character.create(gameObjectsGroup, globals.character.startX, floorHeight/2)
+  ui.create(uiGroup)
 end
 
 
@@ -120,11 +121,11 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
-    physics.addBody(floorObjectsGroup, "dynamic")
 
-    registerEventListeners()
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
+      physics.addBody(floorObjectsGroup, "dynamic")
+      registerEventListeners()
       floorObjectsGroup.gravityScale = 0
   end
 end
@@ -155,6 +156,7 @@ function scene:destroy( event )
   floor:destroy()
   ui:destroy()
   background:destroy()
+  level:destroy()
 end
 
 

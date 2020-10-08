@@ -4,10 +4,15 @@ return {
   centerX = display.contentCenterX,
   centerY = display.contentCenterY,
 
+  level = {
+    initialBlankColumns = 5
+  },
+
   floor = {
     height = 270,
     clipObjects = true,
-    marginBottom = 50
+    marginBottom = 50,
+    displayGridObjects = true
   },
 
   grid = {

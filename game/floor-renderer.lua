@@ -2,7 +2,7 @@ local globals = require( "globals" )
 local tileRenderer = require( "game.tile-renderer" )
 local grid = require( "game.grid" )
 
-local displayCurrentTileObject = false
+local displayCurrentTileObject = globals.floor.displayGridObjects
 local minXValue = 0
 local maxXValue = globals.screenWidth
 
@@ -87,7 +87,7 @@ local function init(group, level)
 
   lastRenderedColumn.x = getXForCurrentIndex()
   currentDisplayedTiles = {}
-  gridLayoutTiles = level.tiles
+  gridLayoutTiles = level.getTiles()
 
   --render the initial view
   while (isVisible(lastRenderedColumn.x)) do

@@ -9,14 +9,10 @@ local displayGrid = globals.grid.displayLines
 
 local group
 local objectsGroup
-local level
 
-local function init(floorGroup, floorObjectsGroup, aLevel)
-  print("INITIALISING FLOOR!")
-
+local function create(floorGroup, floorObjectsGroup, level)
   group = floorGroup
   objectsGroup = floorObjectsGroup
-  level = aLevel
 
   local floor = display.newRect( group, 0, 0, screenWidth, floorHeight )
   floor:setFillColor( 0.8 )
@@ -45,12 +41,11 @@ end
 local function destroy()
   floorRenderer.destroy()
   group = nil
-  level = nil
   objectsGroup = nil
 end
 
 return {
-  init = init,
+  create = create,
   render = render,
   move = move,
   slow = slow,

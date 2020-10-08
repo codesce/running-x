@@ -13,7 +13,7 @@ local function getCloseButton()
   return closeButton
 end
 
-local function init(group)
+local function create(group)
   addCloseButton( group )
 end
 
@@ -22,7 +22,7 @@ local function destroy()
 end
 
 return {
-  init = init,
+  create = create,
   getCloseButton = getCloseButton,
   destroy = destroy
 }
