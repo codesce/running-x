@@ -57,12 +57,14 @@ local function handleKeyPress(event)
 end
 
 local function registerEventListeners()
+  Runtime:addEventListener("enterFrame", renderNextFrame)
   backgroundGroup:addEventListener("touch", character.move)
   ui.getCloseButton():addEventListener("tap", goToHome)
   Runtime:addEventListener("key", handleKeyPress)
 end
 
 local function removeEventListeners()
+  Runtime:removeEventListener("enterFrame", renderNextFrame)
   backgroundGroup:removeEventListener("touch", character.move)
   ui.getCloseButton():removeEventListener("tap", goToHome)
   Runtime:removeEventListener("key", handleKeyPress)
@@ -138,7 +140,8 @@ function scene:hide( event )
     -- Code here runs when the scene is on screen (but is about to go off screen)
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
-    Runtime:removeEventListener("enterFrame", doThis)
+    removeEventListeners()
+
     physics.pause()
     composer.removeScene( "game" )
   end
@@ -149,8 +152,6 @@ function scene:destroy( event )
   local sceneGroup = self.view
 
   -- Code here runs prior to the removal of scene's view
-
-  removeEventListeners()
 
   character:destroy()
   floor:destroy()
