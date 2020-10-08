@@ -27,7 +27,7 @@ local clipFloorObjects = globals.floor.clipObjects
 
 local controls = {
     running = globals.controls.run,
-    stop = globals.controls.slow
+    slow = globals.controls.slow
 }
 
 local backgroundGroup
@@ -35,8 +35,6 @@ local floorGroup
 local floorObjectsGroup
 local gameObjectsGroup
 local uiGroup
-
-local gameTimer
 
 local function goToHome()
   composer.gotoScene( "home", { time=800, effect="crossFade" } )
@@ -51,8 +49,10 @@ local function handleKeyPress(event)
 
   if (key == controls.running) then
     character.run()
-  elseif (key == controls.stop) then
-    character.stop()
+    floor.move()
+  elseif (key == controls.slow) then
+    character.slow()
+    floor.slow()
   end
 end
 
@@ -62,9 +62,6 @@ local function registerEventListeners()
   Runtime:addEventListener("key", handleKeyPress)
 end
 
-local function moveFloor(event)
-  floor.move()
-end
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -124,7 +121,6 @@ function scene:show( event )
     -- Code here runs when the scene is entirely on screen
     physics.addBody(floorObjectsGroup, "dynamic")
     floorObjectsGroup.gravityScale = 0
-    gameTimer = timer.performWithDelay( 1000, moveFloor )
   end
 end
 
@@ -149,7 +145,6 @@ function scene:destroy( event )
   -- Code here runs prior to the removal of scene's view
   Runtime:removeEventListener("enterFrame", renderNextFrame)
   backgroundGroup:removeEventListener("touch", character.move)
-  timer.cancel(gameTimer)
 
   character:destroy()
   floor:destroy()

@@ -32,8 +32,12 @@ local function render()
   floorRenderer.render(objectsGroup)
 end
 
-local function move(event)
+local function move()
   objectsGroup:setLinearVelocity(-300, 0)
+end
+
+local function slow()
+  objectsGroup:setLinearVelocity(0, 0)
 end
 
 local function destroy()
@@ -47,5 +51,6 @@ return {
   init = init,
   render = render,
   move = move,
+  slow = slow,
   destroy = destroy
 }

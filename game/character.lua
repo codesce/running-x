@@ -61,7 +61,7 @@ local function run()
   sprite:play()
 end
 
-local function stop()
+local function slow()
   sprite:pause()
 end
 
@@ -77,6 +77,6 @@ return {
   init = init,
   move = move,
   run = run,
-  stop = stop,
+  slow = slow,
   destroy = destroy
 }
