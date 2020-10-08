@@ -12,6 +12,8 @@ local objectsGroup
 local level
 
 local function init(floorGroup, floorObjectsGroup, aLevel)
+  print("INITIALISING FLOOR!")
+
   group = floorGroup
   objectsGroup = floorObjectsGroup
   level = aLevel

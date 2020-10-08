@@ -48,11 +48,11 @@ local function handleKeyPress(event)
   local key = event.keyName
 
   if (key == controls.running) then
-    character.run()
     floor.move()
+    character.run()
   elseif (key == controls.slow) then
-    character.slow()
     floor.slow()
+    character.slow()
   end
 end
 
@@ -62,6 +62,11 @@ local function registerEventListeners()
   Runtime:addEventListener("key", handleKeyPress)
 end
 
+local function removeEventListeners()
+  backgroundGroup:removeEventListener("touch", character.move)
+  ui.getCloseButton():removeEventListener("tap", goToHome)
+  Runtime:removeEventListener("key", handleKeyPress)
+end
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -115,12 +120,12 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
-    registerEventListeners()
+    physics.addBody(floorObjectsGroup, "dynamic")
 
+    registerEventListeners()
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
-    physics.addBody(floorObjectsGroup, "dynamic")
-    floorObjectsGroup.gravityScale = 0
+      floorObjectsGroup.gravityScale = 0
   end
 end
 
@@ -143,8 +148,8 @@ function scene:destroy( event )
   local sceneGroup = self.view
 
   -- Code here runs prior to the removal of scene's view
-  Runtime:removeEventListener("enterFrame", renderNextFrame)
-  backgroundGroup:removeEventListener("touch", character.move)
+
+  removeEventListeners()
 
   character:destroy()
   floor:destroy()
