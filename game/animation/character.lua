@@ -38,25 +38,18 @@ local runningSequence = {
 }
 
 -------------------------------------------------------------
-------                        OTHER                    ------
+------                        PUBLIC                    ------
 -------------------------------------------------------------
 
-local sequences = {
-  idleSequence,
-  runningSequence
-}
+local Animation = {}
 
-local function createSprite()
+function Animation.new()
+  local sequences = {
+    idleSequence,
+    runningSequence
+  }
+
   return display.newSprite( idleImageSheet, sequences )
 end
 
-local function setSprite(name)
-  sprite:setSequence(name)
-end
-
-return {
-  sprites = {
-    create = createSprite,
-    set = setSprite
-  }
-}
+return Animation

@@ -53,7 +53,7 @@ local function renderIncoming (group)
   end
 end
 
-local function cleanup (group)
+local function removeOutbound(group)
   for i = #currentDisplayedTiles, 1, -1 do
     local currentTile = currentDisplayedTiles[i]
     local currentTileBottomRightX = currentTile:localToContent(0,0) + currentTile.fullWidth
@@ -98,7 +98,7 @@ end
 -- THIS FUNCTION WILL BE CALLED ON A GAME LOOP!
 local function render(group)
   renderIncoming(group)
-  cleanup(group)
+  removeOutbound(group)
 end
 
 local function destroy()

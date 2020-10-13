@@ -4,9 +4,9 @@ local physics = require( "physics" )
 
 local utils = require ( "utils" )
 local background = require ( "game.background" )
-local floor = require( "game.floor" )
-local character = require( "game.character" )
-local ui = require( "game.ui" )
+local Floor = require( "game.floor" )
+local Character = require( "game.character" )
+local UI = require( "game.ui" )
 local level = require( "game.level" )
 
 local scene = composer.newScene()
@@ -30,43 +30,42 @@ local controls = {
     slow = globals.controls.slow
 }
 
+-- display groups
 local backgroundGroup
 local floorGroup
 local floorObjectsGroup
 local gameObjectsGroup
 local uiGroup
 
-local function goToHome()
-  composer.gotoScene( "home", { time=800, effect="crossFade" } )
-end
+-- local game objects
+local character
+local floor
 
 local function renderNextFrame()
-  floor.render()
+  floor:render()
 end
 
 local function handleKeyPress(event)
   local key = event.keyName
 
   if (key == controls.running) then
-    floor.move()
-    character.run()
+    floor:move()
+    character:run()
   elseif (key == controls.slow) then
-    floor.slow()
-    character.slow()
+    floor:slow()
+    character:slow()
   end
 end
 
 local function registerEventListeners()
   Runtime:addEventListener("enterFrame", renderNextFrame)
-  backgroundGroup:addEventListener("touch", character.move)
-  ui.getCloseButton():addEventListener("tap", goToHome)
+  backgroundGroup:addEventListener("touch", character)
   Runtime:addEventListener("key", handleKeyPress)
 end
 
 local function removeEventListeners()
   Runtime:removeEventListener("enterFrame", renderNextFrame)
-  backgroundGroup:removeEventListener("touch", character.move)
-  ui.getCloseButton():removeEventListener("tap", goToHome)
+  backgroundGroup:removeEventListener("touch", character)
   Runtime:removeEventListener("key", handleKeyPress)
 end
 
@@ -82,7 +81,7 @@ function scene:create( event )
   floorGroup = display.newGroup()
   floorObjectsGroup = display.newGroup()
   gameObjectsGroup = display.newGroup()
-  uiGroup = display.newGroup()
+  uiGroup = UI.new()
 
   local container
 
@@ -111,9 +110,8 @@ function scene:create( event )
 
   level.create()
   background.create(backgroundGroup)
-  floor.create(floorGroup, floorObjectsGroup, level)
-  character.create(gameObjectsGroup, globals.character.startX, floorHeight/2)
-  ui.create(uiGroup)
+  floor = Floor.new(floorGroup, floorObjectsGroup, level)
+  character = Character.new({ group = gameObjectsGroup, x = globals.character.startX,  y = floorHeight/2 })
 end
 
 
@@ -152,10 +150,12 @@ function scene:destroy( event )
   local sceneGroup = self.view
 
   -- Code here runs prior to the removal of scene's view
+  character = nil
+  floor = nil
 
-  character:destroy()
-  floor:destroy()
-  ui:destroy()
+  -- TODO: do we need to do this??
+  uiGroup = nil
+
   background:destroy()
   level:destroy()
 end

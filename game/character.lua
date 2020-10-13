@@ -1,82 +1,65 @@
 local globals = require( "globals" )
-local animations = require ( "game.character.animations" )
+local Animation = require ( "game.animation.character" )
 
-local floorHeight = globals.floor.height
+local Character = {}
 
--- how fast does the character move up and down
-local characterMovementRatio = 1.3
+function Character.new(options)
+  local group = options.group
+  local x = options.x
+  local y = options.y
 
--- y-coordinate of character
-local currentCharacterPosition = 0
+  local floorHeight = globals.floor.height
+  local characterMovementRatio = 1.3  -- how fast does the character move up and down
+  local currentCharacterPosition = 0  -- y-coordinate of character
+  local characterBottomOffset = 8     -- caused by bottom of image having 8 pixels of space
+  local sprite                        -- the displayed character image
 
- -- caused by bottom of image having 8 pixels of space
-local characterBottomOffset = 8
-
--- the displayed character image
-local sprite
-
----------------------------------------------
------             Public                -----
----------------------------------------------
-
-local function create(group, x, y)
-  sprite = animations.sprites.create()
-
+  sprite = Animation.new()
   sprite.anchorX = 0
   sprite.anchorY = 1
   sprite.x = x
   sprite.y = y
 
-  group:insert(sprite)
+  -- this is the function that moves the character along the Y axis
+  function sprite:touch(event)
+    local phase = event.phase
 
-  sprite:play()
-end
+    if ("began" == phase) then
+      currentCharacterPosition = event.y
 
+    elseif ("moved" == phase) then
+      local newPosition = sprite.y + ((event.y - currentCharacterPosition) * characterMovementRatio)
 
--- this is the function that moves the character along the Y axis
-local function move(event)
-  local phase = event.phase
+      -- check bounds and force character to stay on floor area
+      if (newPosition > characterBottomOffset and (newPosition < floorHeight+characterBottomOffset)) then
+        sprite.y = newPosition
+      end
 
-  if ("began" == phase) then
-    currentCharacterPosition = event.y
+      currentCharacterPosition = event.y
 
-  elseif ("moved" == phase) then
-    local newPosition = sprite.y + ((event.y - currentCharacterPosition) * characterMovementRatio)
-
-    if (newPosition > characterBottomOffset and (newPosition < floorHeight+characterBottomOffset)) then
-      sprite.y = newPosition
+    elseif ("ended" == phase or "cancelled" == phase) then
+      currentCharacterPosition = sprite.y
+      display.currentStage:setFocus(nil)
     end
 
-    currentCharacterPosition = event.y
-  elseif ("ended" == phase or "cancelled" == phase) then
-    currentCharacterPosition = sprite.y
-    display.currentStage:setFocus(nil)
+    return true -- prevents touch propagation to underlying objects
   end
 
-  return true -- prevents touch propagation to underlying objects
+  function sprite:run()
+    sprite:setSequence("run")
+    sprite:play()
+  end
+
+  function sprite:slow()
+    sprite:pause()
+  end
+
+  group:insert(sprite)
+
+  -- TODO: determine if this should be played here or by the calling code
+ sprite:play()
+
+  return sprite
 end
 
-local function run()
-  sprite:setSequence("run")
-  sprite:play()
-end
-
-local function slow()
-  sprite:pause()
-end
-
-local function destroy()
-  display.remove(sprite)
-  display.remove(imageRunning)
-  sprite = nil
-  imageRunning = nil
-end
-
-
-return {
-  create = create,
-  move = move,
-  run = run,
-  slow = slow,
-  destroy = destroy
-}
+return Character
