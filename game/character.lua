@@ -57,7 +57,7 @@ function Character.new(options)
   group:insert(sprite)
 
   -- TODO: determine if this should be played here or by the calling code
- sprite:play()
+  sprite:play()
 
   return sprite
 end

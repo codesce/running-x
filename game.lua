@@ -3,7 +3,7 @@ local globals = require( "globals" )
 local physics = require( "physics" )
 
 local utils = require ( "utils" )
-local background = require ( "game.background" )
+local Background = require ( "game.background" )
 local Floor = require( "game.floor" )
 local Character = require( "game.character" )
 local UI = require( "game.ui" )
@@ -77,7 +77,7 @@ function scene:create( event )
   -- Code here runs when the scene is first created but has not yet appeared on screen
   local sceneGroup = self.view
 
-  backgroundGroup = display.newGroup()
+  backgroundGroup = Background.new()
   floorGroup = display.newGroup()
   floorObjectsGroup = display.newGroup()
   gameObjectsGroup = display.newGroup()
@@ -109,7 +109,6 @@ function scene:create( event )
   sceneGroup:insert(uiGroup)
 
   level.create()
-  background.create(backgroundGroup)
   floor = Floor.new(floorGroup, floorObjectsGroup, level)
   character = Character.new({ group = gameObjectsGroup, x = globals.character.startX,  y = floorHeight/2 })
 end
@@ -155,8 +154,8 @@ function scene:destroy( event )
 
   -- TODO: do we need to do this??
   uiGroup = nil
+  backgroundGroup = nil
 
-  background:destroy()
   level:destroy()
 end
 
