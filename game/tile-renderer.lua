@@ -1,5 +1,5 @@
 local globals = require( "globals" )
-local grid = require( "game.grid" )
+local grid = require( "game.arena.grid" )
 
 local tileSkewWidth = (grid.lineXOffset / grid.gridRowCount)
 

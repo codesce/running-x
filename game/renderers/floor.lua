@@ -1,6 +1,6 @@
 local globals = require( "globals" )
 local tileRenderer = require( "game.tile-renderer" )
-local grid = require( "game.grid" )
+local grid = require( "game.arena.grid" )
 
 local displayCurrentTileObject = globals.floor.displayGridObjects
 local minXValue = 0

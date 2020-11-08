@@ -1,6 +1,10 @@
 local globals = require( "globals" )
-local grid = require( "game.grid" )
+local grid = require( "game.arena.grid" )
 local FloorRenderer = require( "game.renderers.floor" )
+
+local screenWidth = globals.screenWidth
+local floorHeight = globals.floor.height
+local displayGridLines = globals.grid.displayLines
 
 local Floor = {}
 
@@ -10,7 +14,7 @@ function Floor.new(floorGroup, floorObjectsGroup, level)
   local objectsGroup = floorObjectsGroup
   local renderer = FloorRenderer.new(objectsGroup, level)
 
-  local floor = display.newRect( group, 0, 0, globals.screenWidth, globals.floor.height )
+  local floor = display.newRect( group, 0, 0, screenWidth, floorHeight )
   floor:setFillColor( 0.8 )
   floor.anchorX = 0
   floor.anchorY = 0
@@ -27,7 +31,7 @@ function Floor.new(floorGroup, floorObjectsGroup, level)
     objectsGroup:setLinearVelocity(0, 0)
   end
 
-  if (globals.grid.displayLines == true) then
+  if (displayGridLines == true) then
      grid.draw(group)
    end
 
