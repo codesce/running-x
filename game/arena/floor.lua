@@ -1,5 +1,5 @@
 local globals = require( "globals" )
-local grid = require( "game.arena.grid" )
+local Grid = require( "game.arena.grid" )
 local FloorRenderer = require( "game.renderers.floor" )
 
 local screenWidth = globals.screenWidth
@@ -32,7 +32,8 @@ function Floor.new(floorGroup, floorObjectsGroup, level)
   end
 
   if (displayGridLines == true) then
-     grid.draw(group)
+    local grid = Grid.new()
+    grid.draw(group)
    end
 
    return floor

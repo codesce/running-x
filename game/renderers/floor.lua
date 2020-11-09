@@ -1,17 +1,52 @@
 local globals = require( "globals" )
-local tileRenderer = require( "game.tile-renderer" )
-local grid = require( "game.arena.grid" )
+local TileRenderer = require( "game.renderers.tile" )
+local Grid = require( "game.arena.grid" )
 
 local displayCurrentTileObject = globals.floor.displayGridObjects
 local minXValue = 0
 local maxXValue = globals.screenWidth
 
+---------------------------------------------
+-----   Column - used by FloorRenderer  -----
+---------------------------------------------
+
+local Column = {}
+
+function Column.new()
+  local column = {}
+
+  column.index = 1
+  column.x = minXValue
+  column.object = nil
+
+  function column:renderObject(group)
+    if (self) then
+      display.remove(self.object)
+    end
+    self.object = display.newRect( group, self.x, 0, 5, 5 )
+    self.object:setFillColor( 1, 0, 0,  displayCurrentTileObject and 1 or 0 )
+  end
+
+  return column
+end
+
+---------------------------------------------
+-----            FloorRenderer          -----
+---------------------------------------------
+
 local FloorRenderer = {}
 
 function FloorRenderer.new(group, level)
+  local tileRenderer = TileRenderer.new()
+  local grid = Grid.new()
   local tiles = level.getTiles()
   local currentDisplayedTiles = {}
-  local lastRenderedColumn
+
+  local lastRenderedColumn = Column.new()
+
+  ---------------------------------------------
+  -----             Private               -----
+  ---------------------------------------------
 
   local function isVisible(x)
     return (x >= minXValue and x <= maxXValue)
@@ -22,7 +57,7 @@ function FloorRenderer.new(group, level)
   end
 
   local function getXForCurrentIndex()
-    return grid.getCoordinates(lastRenderedColumn.index, 1).x
+    return grid:getCoordinates(lastRenderedColumn.index, 1).x
   end
 
   local function renderTileColumn()
@@ -32,8 +67,8 @@ function FloorRenderer.new(group, level)
 
     for rowIndex=1,5 do
       local tile = tiles[lastRenderedColumn.index][rowIndex]
-      local coordinates = grid.getCoordinates(lastRenderedColumn.index, rowIndex)
-      local renderedTile = tileRenderer.render( group, tile, coordinates )
+      local coordinates = grid:getCoordinates(lastRenderedColumn.index, rowIndex)
+      local renderedTile = tileRenderer:render( group, tile, coordinates )
       table.insert(currentDisplayedTiles, renderedTile)
     end
 
@@ -42,7 +77,7 @@ function FloorRenderer.new(group, level)
     lastRenderedColumn:renderObject(group)
   end
 
-  local function renderIncoming ()
+  local function renderIncoming()
     local x = lastRenderedColumn.object:localToContent(0,0)
 
     if (isVisible(x)) then
@@ -63,18 +98,7 @@ function FloorRenderer.new(group, level)
   end
 
   local function init()
-    lastRenderedColumn = {
-     index = 1,
-     x = minXValue,
-     object = nil,
-     renderObject = function (self, group)
-       if (self) then display.remove(self.object) end
-       self.object = display.newRect( group, self.x, 0, 5, 5 )
-       self.object:setFillColor( 1, 0, 0,  displayCurrentTileObject and 1 or 0 )
-     end
-   }
-
-   lastRenderedColumn.x = getXForCurrentIndex()
+    lastRenderedColumn.x = getXForCurrentIndex()
 
     while (isVisible(lastRenderedColumn.x)) do
       renderTileColumn()
