@@ -37,11 +37,14 @@ end
 local function handleKeyPress(event)
   local key = event.keyName
 
-  if (key == controls.running) then
-    arena:move()
-  elseif (key == controls.slow) then
-    arena:slow()
+  if (event.phase == "down") then
+    if (key == controls.running) then
+      arena:move()
+    elseif (key == controls.slow) then
+      arena:slow()
+    end
   end
+
 end
 
 local function registerEventListeners()
@@ -64,18 +67,7 @@ function scene:create( event )
   -- Code here runs when the scene is first created but has not yet appeared on screen
   local sceneGroup = self.view
 
-  character = Character.new()
-  level.create()
-
-  background = Background.new()
-  arena = Arena.new(level, character)
-  ui = UI.new()
-
-  sceneGroup:insert(background)
-  sceneGroup:insert(arena)
-  sceneGroup:insert(ui)
 end
-
 
 function scene:show( event )
   local sceneGroup = self.view
@@ -83,11 +75,22 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
+    character = Character.new()
+    level.create()
+
+    background = Background.new()
+    arena = Arena.new(level, character)
+    ui = UI.new()
+
+    -- TODO: should we remove these from the sceneGroup when scene is hidden?
+    sceneGroup:insert(background)
+    sceneGroup:insert(arena)
+    sceneGroup:insert(ui)
 
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
-      registerEventListeners()
-      arena:addPhysics()
+    registerEventListeners()
+    arena:addPhysics()
   end
 end
 
@@ -103,20 +106,20 @@ function scene:hide( event )
 
     physics.pause()
     composer.removeScene( "game" )
+
+    -- Code here runs prior to the removal of scene's view
+    character = nil
+    arena = nil
+    ui = nil
+    background = nil
+
+    level:destroy()
   end
 end
-
 
 function scene:destroy( event )
   local sceneGroup = self.view
 
-  -- Code here runs prior to the removal of scene's view
-  character = nil
-  arena = nil
-  ui = nil
-  background = nil
-
-  level:destroy()
 end
 
 

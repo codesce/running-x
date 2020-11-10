@@ -9,6 +9,15 @@ local floorHeight = globals.floor.height
 local floorMarginBottom = globals.floor.marginBottom
 local clipFloorObjects = globals.floor.clipObjects
 
+local runtime = 0
+
+local function getDeltaTime()
+   local temp = system.getTimer()
+   local dt = (temp-runtime) / (1000/60)
+   runtime = temp
+   return dt
+end
+
 local Arena = {}
 
 function Arena.new(levelIn, characterIn)
@@ -44,18 +53,36 @@ function Arena.new(levelIn, characterIn)
 
   character:add(gameObjectsGroup, globals.character.startX, floorHeight/2)
 
+  -- possible actions are "pause", "move", "slow"
+  local currentAction = "pause"
+
+  -- NOTE: this is called on every frame!
   function group:render()
+    local delta = getDeltaTime()
+
+    if (currentAction == "move") then
+      floor:move(delta)
+    elseif (currentAction == "slow") then
+      floor:slow(delta)
+    elseif (currentAction == "pause") then
+      floor.hold()
+    end
+
     floor:render()
   end
 
   function group:move()
+    currentAction = "move"
     character:run()
-    floor:move()
   end
 
   function group:slow()
+    currentAction = "slow"
     character:slow()
-    floor:slow()
+  end
+
+  function group:hold()
+    currentAction = "hold"
   end
 
   function group:addPhysics()
